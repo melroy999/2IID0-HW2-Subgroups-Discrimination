@@ -10,7 +10,7 @@ public class SetAttribute extends AbstractAttribute {
 
     protected SetAttribute(String name, int id, String valueSet) {
         super(name, id);
-        this.values = valueSet.replaceAll(("(\\{|\\})"),"").split(",");
+        this.values = valueSet.split(",");
     }
 
     public String[] getValues() {

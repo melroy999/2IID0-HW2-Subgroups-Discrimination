@@ -11,7 +11,7 @@ import java.util.List;
 public class ArffReader {
     private static final List<String> lines = new ArrayList<>();
 
-    public static ArffFile getArffFile(String filePath) throws IOException {
+    public static ArffFile getArffFile(String filePath) throws Exception {
         lines.clear();
         lines.addAll(FileLoader.readAllLines(filePath));
 

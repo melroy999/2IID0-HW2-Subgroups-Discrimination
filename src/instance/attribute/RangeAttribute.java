@@ -11,7 +11,7 @@ public class RangeAttribute extends AbstractAttribute {
     protected RangeAttribute(String name, int id, String valueSet) {
         super(name, id);
 
-        String[] components = valueSet.replaceAll(("(\\{|\\})"),"").split(",");
+        String[] components = valueSet.split(",");
 
         values = new Range[components.length];
 

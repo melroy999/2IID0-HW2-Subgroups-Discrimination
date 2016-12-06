@@ -3,9 +3,11 @@ package instance.attribute;
 import instance.Type;
 import instance.search.SubGroup;
 
-import java.util.Arrays;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public abstract class AbstractAttribute {
+    private static final Pattern ATTRIBUTE_MATCH_PATTERN = Pattern.compile("@attribute\\s+([']?(?:[^']*)[']?)\\s+[{]?(.*?)[}]?");
     private final String name;
     private final int id;
 
@@ -26,15 +28,23 @@ public abstract class AbstractAttribute {
 
     public abstract boolean isPartOfSubgroup(SubGroup subGroup, String value);
 
-    public static AbstractAttribute getAttribute(String line, int id) {
-        //Break the line on whitespace.
-        String[] components = line.split("\\s");
+    public static AbstractAttribute getAttribute(String line, int id) throws Exception {
+        //Get the pattern matches.
+        Matcher matches = ATTRIBUTE_MATCH_PATTERN.matcher(line);
 
-        //Set the name, which is the second value in the data set.
-        String name = components[1];
+        //Find matches.
+        if(!matches.matches()) {
+            throw new Exception("No attribute found.");
+        }
+
+        //Set the name, which is the first group in the regex.
+        String name = matches.group(1);
+
+        //The values are the second group in the regex.
+        String value = matches.group(2);
 
         //Determine the Type.
-        Type type = Type.getType(components[2]);
+        Type type = Type.getType(value);
 
         //Based on the type, create an actual instance.
         switch (type) {
@@ -43,9 +53,9 @@ public abstract class AbstractAttribute {
             case NUMERIC:
                 return new NumericAttribute(name, id);
             case SET:
-                return new SetAttribute(name, id, components[2]);
+                return new SetAttribute(name, id, value);
             case RANGE:
-                return new RangeAttribute(name, id, components[2]);
+                return new RangeAttribute(name, id, value);
         }
         return null;
     }

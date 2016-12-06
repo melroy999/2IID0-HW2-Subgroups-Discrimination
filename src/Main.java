@@ -1,4 +1,5 @@
 import instance.ArffFile;
+import instance.attribute.AbstractAttribute;
 import instance.search.BeamSearch;
 import reader.ArffReader;
 
@@ -9,8 +10,13 @@ public class Main {
     public static void main(String[] args) {
         try {
             ArffFile file = ArffReader.getArffFile("/dataset.arff");
-            System.out.println(BeamSearch.search(file, 1, 1));
-        } catch (IOException e) {
+
+            for(AbstractAttribute attribute : file.getAttributes()) {
+                System.out.println(attribute);
+            }
+
+            //System.out.println(BeamSearch.search(file, 1, 1));
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
