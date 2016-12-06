@@ -15,7 +15,7 @@ public class Main {
                 System.out.println(attribute);
             }
 
-            //System.out.println(BeamSearch.search(file, 1, 1));
+            System.out.println(BeamSearch.search(file, 1, 1));
         } catch (Exception e) {
             e.printStackTrace();
         }
