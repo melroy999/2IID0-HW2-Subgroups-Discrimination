@@ -1,6 +1,7 @@
 package instance.attribute;
 
 import instance.Type;
+import instance.search.SubGroup;
 
 public class NumericAttribute extends AbstractAttribute {
     protected NumericAttribute(String name, int id) {
@@ -10,6 +11,11 @@ public class NumericAttribute extends AbstractAttribute {
     @Override
     public Type getType() {
         return null;
+    }
+
+    @Override
+    public boolean isPartOfSubgroup(SubGroup subGroup, String value) {
+        return Double.valueOf(value) <= Double.valueOf(subGroup.getValue());
     }
 
     @Override

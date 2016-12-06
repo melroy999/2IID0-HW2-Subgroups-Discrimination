@@ -9,7 +9,6 @@ public class ArffFile {
     private final AbstractAttribute[] attributes;
     private final Instance[] instances;
     private final String relation;
-    private final HashMap<AbstractAttribute, String[]> attributeInstanceValues = new HashMap<>();
 
     public ArffFile(List<AbstractAttribute> attributeList, List<Instance> instanceList, String relation) {
         this.attributes = new AbstractAttribute[attributeList.size()];
@@ -20,12 +19,6 @@ public class ArffFile {
         this.instances = new Instance[instanceList.size()];
         for(int i = 0; i < instanceList.size(); i++) {
             this.instances[i] = instanceList.get(i);
-            for(AbstractAttribute attribute : attributes) {
-                String[] mapping = attributeInstanceValues.getOrDefault(attribute, new String[instances.length]);
-                mapping[i] = this.instances[i].getValue(attribute);
-                attributeInstanceValues.put(attribute, mapping);
-            }
-
         }
 
         this.relation = relation;
@@ -37,10 +30,6 @@ public class ArffFile {
 
     public Instance[] getInstances() {
         return instances;
-    }
-
-    public String[] getAttributeInstances(AbstractAttribute attribute) {
-        return attributeInstanceValues.getOrDefault(attribute, new String[0]);
     }
 
     public String getRelation() {

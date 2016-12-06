@@ -1,6 +1,7 @@
 package instance.attribute;
 
 import instance.Type;
+import instance.search.SubGroup;
 
 public class BooleanAttribute extends AbstractAttribute {
     protected BooleanAttribute(String name, int id) {
@@ -10,6 +11,11 @@ public class BooleanAttribute extends AbstractAttribute {
     @Override
     public Type getType() {
         return Type.BOOLEAN;
+    }
+
+    @Override
+    public boolean isPartOfSubgroup(SubGroup subGroup, String value) {
+        return value.equals(subGroup.getValue());
     }
 
     @Override

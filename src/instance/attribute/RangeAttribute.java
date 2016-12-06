@@ -1,6 +1,7 @@
 package instance.attribute;
 
 import instance.Type;
+import instance.search.SubGroup;
 
 import java.util.Arrays;
 
@@ -24,6 +25,11 @@ public class RangeAttribute extends AbstractAttribute {
     @Override
     public Type getType() {
         return Type.RANGE;
+    }
+
+    @Override
+    public boolean isPartOfSubgroup(SubGroup subGroup, String value) {
+        return value.equals(subGroup.getValue());
     }
 
     public Range[] getValues() {

@@ -19,4 +19,8 @@ public class Instance {
     public String getValue(AbstractAttribute attribute) {
         return values[attribute.getId()];
     }
+
+    public String getTarget() {
+        return values[values.length - 2];
+    }
 }

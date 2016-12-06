@@ -1,6 +1,7 @@
 package instance.attribute;
 
 import instance.Type;
+import instance.search.SubGroup;
 
 import java.util.Arrays;
 
@@ -19,6 +20,11 @@ public class SetAttribute extends AbstractAttribute {
     @Override
     public Type getType() {
         return Type.SET;
+    }
+
+    @Override
+    public boolean isPartOfSubgroup(SubGroup subGroup, String value) {
+        return value.equals(subGroup.getValue());
     }
 
     @Override

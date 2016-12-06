@@ -1,4 +1,5 @@
 import instance.ArffFile;
+import instance.search.BeamSearch;
 import reader.ArffReader;
 
 import java.io.IOException;
@@ -8,6 +9,7 @@ public class Main {
     public static void main(String[] args) {
         try {
             ArffFile file = ArffReader.getArffFile("/dataset.arff");
+            System.out.println(BeamSearch.search(file, 1, 1));
         } catch (IOException e) {
             e.printStackTrace();
         }

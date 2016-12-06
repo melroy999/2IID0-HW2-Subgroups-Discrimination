@@ -1,6 +1,7 @@
 package instance.attribute;
 
 import instance.Type;
+import instance.search.SubGroup;
 
 import java.util.Arrays;
 
@@ -22,6 +23,8 @@ public abstract class AbstractAttribute {
     }
 
     public abstract Type getType();
+
+    public abstract boolean isPartOfSubgroup(SubGroup subGroup, String value);
 
     public static AbstractAttribute getAttribute(String line, int id) {
         //Break the line on whitespace.
