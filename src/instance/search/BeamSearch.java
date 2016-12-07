@@ -9,7 +9,7 @@ import instance.result.EvaluationResult;
 import java.util.*;
 
 public class BeamSearch {
-    public static SubGroup[] search(ArffFile data, AbstractHeuristic evaluator, int searchDepth, int searchWidth, HashSet<String> blackListed) {
+    public static SubGroup[][] search(ArffFile data, AbstractHeuristic evaluator, int searchDepth, int searchWidth, HashSet<String> blackListed) {
         System.out.println("Performing beam search with search depth " + searchDepth + " and search width " + searchWidth + ".");
         HashSet<SubGroup> seeds = new HashSet<>();
 
@@ -62,22 +62,7 @@ public class BeamSearch {
             seeds = new HashSet<>(Arrays.asList(resultMap[level]));
         }
 
-
-
-        int i = 1;
-        for(SubGroup[] subGroups : resultMap) {
-            Arrays.sort(subGroups);
-            System.out.println("Depth " + i + ": ");
-            for(SubGroup subGroup : subGroups) {
-                System.out.println(subGroup);
-            }
-            i++;
-        }
-        System.out.println();
-
-        SubGroup[] result = resultMap[searchDepth - 1];
-        Arrays.sort(result);
-        return result;
+        return resultMap;
     }
 
     private static HashSet<SubGroup> searchOnAttribute(ArffFile data, AbstractHeuristic evaluator, AbstractAttribute attribute, HashSet<SubGroup> seeds, int searchWidth) {

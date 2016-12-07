@@ -4,22 +4,17 @@ import instance.Instance;
 import instance.result.EvaluationResult;
 import instance.search.SubGroup;
 
-import java.util.HashSet;
-
-public class WeightedRelativeAccuracyHeuristic extends AbstractHeuristic {
-
+public class SensitivityQualityMeasureHeuristic extends AbstractHeuristic {
     @Override
     public EvaluationResult evaluate(SubGroup subGroup, Instance[] instance) {
         EvaluationResult result = getConfusionTable(subGroup, instance);
 
         double p = result.getCoveredPositive();
         double P = result.getPositiveCount();
-        double n = result.getCoveredNegative();
-        double N = result.getNegativeCount();
 
-        double evaluation = ((p + n) / (P + N)) * (p / (p + n) - P / (P + N));
+        double evaluation = p / P;
 
-        //The heuristic function as defined in the paper on page 49.
+        //The sensitivity quality measure.
         result.setEvaluation(evaluation);
 
         return result;
