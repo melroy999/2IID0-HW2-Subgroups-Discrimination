@@ -5,11 +5,8 @@ public class EvaluationResult {
     private final double coveredNegative;
     private final double notCoveredPositive;
     private final double notCoveredNegative;
-    private final double coveredInstancesCount;
-    private final double nonCoveredInstancesCount;
     private final double positiveCount;
     private final double negativeCount;
-    private final double totalInstances;
     private double evaluation;
 
     public EvaluationResult(double coveredPositive, double notCoveredPositive, double coveredNegative, double notCoveredNegative) {
@@ -17,11 +14,8 @@ public class EvaluationResult {
         this.notCoveredPositive = notCoveredPositive;
         this.coveredNegative = coveredNegative;
         this.notCoveredNegative = notCoveredNegative;
-        this.coveredInstancesCount = coveredPositive + coveredNegative;
-        this.nonCoveredInstancesCount = notCoveredPositive + notCoveredNegative;
         this.positiveCount = coveredPositive + notCoveredPositive;
         this.negativeCount = coveredNegative + notCoveredNegative;
-        this.totalInstances = this.positiveCount + this.negativeCount;
     }
 
     public double getCoveredPositive() {
@@ -32,32 +26,12 @@ public class EvaluationResult {
         return coveredNegative;
     }
 
-    public double getNotCoveredPositive() {
-        return notCoveredPositive;
-    }
-
-    public double getNotCoveredNegative() {
-        return notCoveredNegative;
-    }
-
-    public double getCoveredInstancesCount() {
-        return coveredInstancesCount;
-    }
-
-    public double getNonCoveredInstancesCount() {
-        return nonCoveredInstancesCount;
-    }
-
     public double getPositiveCount() {
         return positiveCount;
     }
 
     public double getNegativeCount() {
         return negativeCount;
-    }
-
-    public double getTotalInstances() {
-        return totalInstances;
     }
 
     public double getEvaluation() {
@@ -75,11 +49,11 @@ public class EvaluationResult {
                 ", n=" + coveredNegative +
                 ", P-p=" + notCoveredPositive +
                 ", N-n=" + notCoveredNegative +
-                ", p+n=" + coveredInstancesCount +
-                ", N+P-p-n=" + nonCoveredInstancesCount +
-                ", p+P=" + positiveCount +
-                ", n+N=" + negativeCount +
-                ", N+P=" + totalInstances +
+                ", p+n=" + (coveredPositive + coveredNegative) +
+                ", N+P-p-n=" + (this.positiveCount + this.negativeCount - coveredPositive - coveredNegative) +
+                ", P=" + positiveCount +
+                ", N=" + negativeCount +
+                ", N+P=" + (this.positiveCount + this.negativeCount) +
                 ", evaluation=" + evaluation +
                 '}';
     }

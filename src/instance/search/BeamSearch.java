@@ -18,8 +18,6 @@ public class BeamSearch {
         HashSet<SubGroup> bestGroups = new HashSet<>();
 
         for(int level = 0; level < searchDepth; level++) {
-            System.out.println("> Searching level " + (level + 1));
-
             for(AbstractAttribute attribute : data.getAttributes()) {
                 if(blackListed.contains(attribute.getName())) {
                     continue;
