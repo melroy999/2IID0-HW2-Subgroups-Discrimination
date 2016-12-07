@@ -5,6 +5,10 @@ import instance.Type;
 import instance.attribute.AbstractAttribute;
 import instance.result.EvaluationResult;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+
 public class SubGroup implements Comparable<SubGroup> {
     private final AbstractAttribute attribute;
     private final String value;
@@ -66,12 +70,31 @@ public class SubGroup implements Comparable<SubGroup> {
 
     }
 
-    public boolean hasSimilarSubgroup(AbstractAttribute abstractAttribute, String value) {
+    public boolean recursiveHasAttribute(AbstractAttribute abstractAttribute) {
         boolean result = /*this.value.equals(value) &&*/ this.attribute == abstractAttribute;
         if(subGroup != null) {
-            result = result || subGroup.hasSimilarSubgroup(abstractAttribute, value);
+            result = result || subGroup.recursiveHasAttribute(abstractAttribute);
         }
         return result;
+    }
+
+    public boolean recursiveHasAllSubgroups(SubGroup sg2, boolean allowSubgroupWithDifferentValues) {
+        SubGroup sg1 = this;
+        HashSet<String> thisAttributes = new HashSet<>();
+        thisAttributes.add(sg1.getAttribute().getName() + (allowSubgroupWithDifferentValues ? "" : sg1.getValue()));
+        while(sg1.getSubGroup() != null) {
+            sg1 = sg1.getSubGroup();
+            thisAttributes.add(sg1.getAttribute().getName() + (allowSubgroupWithDifferentValues ? "" : sg1.getValue()));
+        }
+
+        HashSet<String> subGroupAttributes = new HashSet<>();
+        subGroupAttributes.add(sg2.getAttribute().getName() + (allowSubgroupWithDifferentValues ? "" : sg2.getValue()));
+        while(sg2.getSubGroup() != null) {
+            sg2 = sg2.getSubGroup();
+            subGroupAttributes.add(sg2.getAttribute().getName() + (allowSubgroupWithDifferentValues ? "" : sg2.getValue()));
+        }
+
+        return thisAttributes.equals(subGroupAttributes);
     }
 
     @Override

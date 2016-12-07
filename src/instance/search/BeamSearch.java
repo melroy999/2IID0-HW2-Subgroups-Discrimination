@@ -6,18 +6,22 @@ import instance.attribute.AbstractAttribute;
 import instance.heuristic.AbstractHeuristic;
 import instance.result.EvaluationResult;
 
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class BeamSearch {
-    public static SubGroup[][] search(ArffFile data, AbstractHeuristic evaluator, int searchDepth, int searchWidth, HashSet<String> blackListed) {
-        System.out.println("Performing beam search with search depth " + searchDepth + " and search width " + searchWidth + ".");
+
+    public static SubGroup[][] search(ArffFile data, AbstractHeuristic evaluator, int searchDepth, int searchWidth, HashSet<String> blackListed, boolean allowSubgroupWithDifferentValues) {
+        System.out.println("[" + getCurrentTimeStamp() + "]: Performing beam search with search depth " + searchDepth + " and search width " + searchWidth + ".");
         HashSet<SubGroup> seeds = new HashSet<>();
 
         //Save the results for each depth.
         SubGroup[][] resultMap = new SubGroup[searchDepth][searchWidth];
         HashSet<SubGroup> bestGroups = new HashSet<>();
 
+        System.out.print("Current level: ");
         for(int level = 0; level < searchDepth; level++) {
+            System.out.print((level + 1) + "... ");
             for(AbstractAttribute attribute : data.getAttributes()) {
                 if(blackListed.contains(attribute.getName())) {
                     continue;
@@ -25,9 +29,16 @@ public class BeamSearch {
 
                 //We don't want to rank the target, only the descriptors.
                 if(attribute.getId() < data.getAttributes().length - 1) {
-                    HashSet<SubGroup> bestSubGroups = searchOnAttribute(data, evaluator, attribute, seeds, searchWidth);
+                    HashSet<SubGroup> bestSubGroups = searchOnAttribute(data, evaluator, attribute, seeds, searchWidth, allowSubgroupWithDifferentValues);
 
-                    for(SubGroup subGroup : bestSubGroups) {
+                    subGroupLoop: for(SubGroup subGroup : bestSubGroups) {
+                        //Check whether one of the subgroups in the best groups list already contains ALL of the attributes, with the exact same values.
+                        for(SubGroup sg : bestGroups) {
+                            if(sg.recursiveHasAllSubgroups(subGroup, allowSubgroupWithDifferentValues)) {
+                                continue subGroupLoop;
+                            }
+                        }
+
                         //Check if we have space in the best result list, otherwise remove.
                         if(bestGroups.size() < searchWidth) {
                             bestGroups.add(subGroup);
@@ -60,11 +71,12 @@ public class BeamSearch {
             //Set the new seeds.
             seeds = new HashSet<>(Arrays.asList(resultMap[level]));
         }
+        System.out.println();
 
         return resultMap;
     }
 
-    private static HashSet<SubGroup> searchOnAttribute(ArffFile data, AbstractHeuristic evaluator, AbstractAttribute attribute, HashSet<SubGroup> seeds, int searchWidth) {
+    private static HashSet<SubGroup> searchOnAttribute(ArffFile data, AbstractHeuristic evaluator, AbstractAttribute attribute, HashSet<SubGroup> seeds, int searchWidth, boolean allowSubgroupWithDifferentValues) {
         //Hold which values have already been considered during the search.
         HashSet<String> visited = new HashSet<>();
         HashSet<SubGroup> bestGroups = new HashSet<>();
@@ -94,10 +106,24 @@ public class BeamSearch {
                 }
             }
 
-            for(SubGroup subGroup : seededGroups) {
-                //If the subgroup contains duplicates, skip.
-                if(subGroup.getSubGroup() != null && subGroup.getSubGroup().hasSimilarSubgroup(attribute, value)) {
+            subGroupLoop: for(SubGroup subGroup : seededGroups) {
+                //If the subgroup of this subgroup already contains the subgroup we want to observe, skip.
+                if(subGroup.getSubGroup() != null && subGroup.getSubGroup().recursiveHasAttribute(attribute)) {
                     continue;
+                }
+
+                //Check whether one of the seeds already contains ALL of the attributes, with the exact same values.
+                for(SubGroup sg : seeds) {
+                    if(sg.recursiveHasAllSubgroups(subGroup, allowSubgroupWithDifferentValues)) {
+                        continue subGroupLoop;
+                    }
+                }
+
+                //Check whether one of the subgroups in the best groups list already contains ALL of the attributes, with the exact same values.
+                for(SubGroup sg : bestGroups) {
+                    if(sg.recursiveHasAllSubgroups(subGroup, allowSubgroupWithDifferentValues)) {
+                        continue subGroupLoop;
+                    }
                 }
 
                 //Evaluate this subgroup, by incrementing for instances in subgroup with positive target,
@@ -148,5 +174,9 @@ public class BeamSearch {
         }
 
         return bestGroups;
+    }
+
+    public static String getCurrentTimeStamp() {
+        return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS").format(new Date());
     }
 }
