@@ -10,7 +10,7 @@ public class NumericAttribute extends AbstractAttribute {
 
     @Override
     public Type getType() {
-        return null;
+        return Type.NUMERIC;
     }
 
     @Override

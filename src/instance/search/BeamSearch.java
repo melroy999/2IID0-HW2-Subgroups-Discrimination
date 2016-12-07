@@ -3,36 +3,58 @@ package instance.search;
 import instance.ArffFile;
 import instance.Instance;
 import instance.attribute.AbstractAttribute;
+import instance.evaluate.AbstractEvaluator;
+import instance.result.EvaluationResult;
 
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 
 public class BeamSearch {
-    public static SubGroup search(ArffFile data, int searchWidth, int searchDepth) {
-        int bestEvaluation = Integer.MIN_VALUE;
+    public static HashSet<SubGroup> search(ArffFile data, AbstractEvaluator evaluator, int searchDepth, int searchWidth, HashSet<String> blackListed) {
+
         SubGroup bestSubGroup = null;
+        HashSet<SubGroup> seeds = new LinkedHashSet<>();
+        HashSet<AbstractAttribute> seedAttributes = new HashSet<>();
+        AbstractAttribute bestAttribute = null;
 
-        for(AbstractAttribute attribute : data.getAttributes()) {
-            System.out.println("Evaluating attribute " + attribute);
+        for(int i = 0; i < searchDepth; i++) {
+            double bestEvaluation = Double.MIN_VALUE;
 
-            //We don't want to rank the target, only the descriptors.
-            if(attribute.getId() < data.getAttributes().length - 1) {
-                SubGroup bestAttributeSubgroup = searchOnAttribute(data, attribute);
+            System.out.println("> Searching level " + i);
 
-                //Check if we have a better one.
-                if(bestAttributeSubgroup.getEvaluation() > bestEvaluation) {
-                    bestEvaluation = bestAttributeSubgroup.getEvaluation();
-                    bestSubGroup = bestAttributeSubgroup;
+            for(AbstractAttribute attribute : data.getAttributes()) {
+                if(seedAttributes.contains(attribute) || blackListed.contains(attribute.getName())) {
+                    System.out.println("Already evaluated attribute " + attribute);
+                    continue;
+                }
+
+                //We don't want to rank the target, only the descriptors.
+                if(attribute.getId() < data.getAttributes().length - 1) {
+                    SubGroup subGroup = searchOnAttribute(data, evaluator, attribute, seeds);
+
+                    //Check if we have a better one.
+                    if(subGroup.getEvaluation().getEvaluation() > bestEvaluation) {
+                        bestEvaluation = subGroup.getEvaluation().getEvaluation();
+                        bestSubGroup = subGroup;
+                        bestAttribute = attribute;
+                    }
                 }
             }
+
+            System.out.println(bestSubGroup);
+
+            seeds.add(bestSubGroup);
+            seedAttributes.add(bestAttribute);
         }
 
-        return bestSubGroup;
+
+        return seeds;
     }
 
-    private static SubGroup searchOnAttribute(ArffFile data, AbstractAttribute attribute) {
+    private static SubGroup searchOnAttribute(ArffFile data, AbstractEvaluator evaluator, AbstractAttribute attribute, HashSet<SubGroup> seeds) {
         //Hold which values have already been considered during the search.
         HashSet<String> visited = new HashSet<>();
-        int bestEvaluation = Integer.MIN_VALUE;
+        double bestEvaluation = Integer.MIN_VALUE;
         SubGroup bestSubGroup = null;
 
         for(Instance subGroupCandidates : data.getInstances()) {
@@ -52,21 +74,14 @@ public class BeamSearch {
 
             //Evaluate this subgroup, by incrementing for instances in subgroup with positive target,
             //and decrement for instances not in subgroup with positive target.
-            int evaluation = 0;
-            for(Instance instance : data.getInstances()) {
-                if(subGroup.isPartOfSubgroup(instance)) {
-                    evaluation += (instance.getTarget().equals("1") ? 1 : 0);
-                } else {
-                    evaluation += (instance.getTarget().equals("1") ? -1 : 0);
-                }
-            }
+            EvaluationResult evaluation = evaluator.evaluate(seeds, subGroup, data.getInstances());
 
             //Set the evaluation for the subgroup.
             subGroup.setEvaluation(evaluation);
 
             //Check if we have a better one.
-            if(evaluation > bestEvaluation) {
-                bestEvaluation = evaluation;
+            if(evaluation.getEvaluation() > bestEvaluation) {
+                bestEvaluation = evaluation.getEvaluation();
                 bestSubGroup = subGroup;
             }
         }

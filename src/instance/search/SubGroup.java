@@ -1,12 +1,14 @@
 package instance.search;
 
 import instance.Instance;
+import instance.Type;
 import instance.attribute.AbstractAttribute;
+import instance.result.EvaluationResult;
 
 public class SubGroup {
     private final AbstractAttribute attribute;
     private final String value;
-    private int evaluation;
+    private EvaluationResult evaluation;
 
     public SubGroup(AbstractAttribute attribute, String value) {
         this.attribute = attribute;
@@ -25,11 +27,11 @@ public class SubGroup {
         return !instance.getValue(attribute).contains("?") && attribute.isPartOfSubgroup(this, instance.getValue(attribute));
     }
 
-    public int getEvaluation() {
+    public EvaluationResult getEvaluation() {
         return evaluation;
     }
 
-    public void setEvaluation(int evaluation) {
+    public void setEvaluation(EvaluationResult evaluation) {
         this.evaluation = evaluation;
     }
 
@@ -56,7 +58,7 @@ public class SubGroup {
     public String toString() {
         return "SubGroup{" +
                 "attribute=" + attribute +
-                ", value='" + value + '\'' +
+                ", value='" + (attribute.getType() == Type.NUMERIC ? "<=" : "") + value + '\'' +
                 ", evaluation=" + evaluation +
                 '}';
     }
