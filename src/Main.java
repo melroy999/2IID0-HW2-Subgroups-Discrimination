@@ -24,39 +24,40 @@ public class Main {
             HashSet<String> blacklist = new HashSet<>();
             blacklist.add("decision_o");
 
-            System.out.println("Weighted relative accuracy: ");
+            System.out.println("= Weighted relative accuracy ===============================================================================");
             System.out.println("((p + n) / (P + N)) * (p / (p + n) - P / (P + N))");
-            SubGroup[][] wraResult = BeamSearch.search(file, new WeightedRelativeAccuracyHeuristic(), 2, 5, blacklist);
-            for(SubGroup subGroup : wraResult[wraResult.length - 1]) {
-                System.out.println("(eval: " + String.format("%." + DECIMAL_PLACES + "f", subGroup.getEvaluation()) + "): \t\t" + subGroup.shortNotation());
-            }
-            System.out.println();
+            SubGroup[][] wraResult = BeamSearch.search(file, new WeightedRelativeAccuracyHeuristic(), 3, 10, blacklist);
+            printFullResultArray(wraResult);
 
-            System.out.println("Sensitivity quality measure: ");
+            System.out.println("= Sensitivity quality measure ==============================================================================");
             System.out.println("p / P");
-            SubGroup[][] sensitivityResult = BeamSearch.search(file, new SensitivityQualityMeasureHeuristic(), 2, 5, blacklist);
-            for(SubGroup subGroup : sensitivityResult[sensitivityResult.length - 1]) {
-                System.out.println("(eval: " + String.format("%." + DECIMAL_PLACES + "f", subGroup.getEvaluation()) + "): \t\t" + subGroup.shortNotation());
-            }
-            System.out.println();
+            SubGroup[][] sensitivityResult = BeamSearch.search(file, new SensitivityQualityMeasureHeuristic(), 3, 10, blacklist);
+            printFullResultArray(sensitivityResult);
 
-            System.out.println("Specificity quality measure: ");
+            System.out.println("= Specificity quality measure ==============================================================================");
             System.out.println("1 - n / N");
-            SubGroup[][] specificityResult = BeamSearch.search(file, new SpecificityQualityMeasureHeuristic(), 2, 5, blacklist);
-            for(SubGroup subGroup : specificityResult[specificityResult.length - 1]) {
-                System.out.println("(eval: " + String.format("%." + DECIMAL_PLACES + "f", subGroup.getEvaluation()) + "): \t\t" + subGroup.shortNotation());
-            }
-            System.out.println();
+            SubGroup[][] specificityResult = BeamSearch.search(file, new SpecificityQualityMeasureHeuristic(), 3, 10, blacklist);
+            printFullResultArray(specificityResult);
 
-            System.out.println("x2:");
-            System.out.println("((p * N - P * n) * (p * N - P * n) / (P + N)) * ((P + N) * (P + N) / (P * N * (p + n) * (P + N - p - n)))");
-            SubGroup[][] x2Result = BeamSearch.search(file, new X2Heuristic(), 5, 5, blacklist);
-            for(SubGroup subGroup : x2Result[x2Result.length - 1]) {
-                System.out.println("(eval: " + String.format("%." + DECIMAL_PLACES + "f", subGroup.getEvaluation()) + "): \t\t" + subGroup.shortNotation());
-            }
+            System.out.println("= x2 =======================================================================================================");
+            System.out.println("(((p * N - P * n) * (p * N - P * n)) / (P + N)) * ((P + N) * (P + N) / (P * N * (p + n) * (P + N - p - n)))");
+            SubGroup[][] x2Result = BeamSearch.search(file, new X2Heuristic(), 3, 10, blacklist);
+            printFullResultArray(x2Result);
 
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private static void printFullResultArray(SubGroup[][] wraResult) {
+        for(int i = 0; i < wraResult.length; i++) {
+            System.out.println();
+            SubGroup[] subGroups = wraResult[i];
+            System.out.println("Level-" + (i + 1) + ":");
+            for(SubGroup subGroup : subGroups) {
+                System.out.println("\t (eval: " + String.format("%." + DECIMAL_PLACES + "f", subGroup.getEvaluation()) + "): \t" + subGroup.shortNotation());
+            }
+        }
+        System.out.println();
     }
 }

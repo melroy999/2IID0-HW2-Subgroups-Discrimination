@@ -14,7 +14,7 @@ public class X2Heuristic extends AbstractHeuristic {
         double n = result.getCoveredNegative();
         double N = result.getNegativeCount();
 
-        double evaluation = ((p * N - P * n) * (p * N - P * n) / (P + N)) * ((P + N) * (P + N) / (P * N * (p + n) * (P + N - p - n)));
+        double evaluation = (((p * N - P * n) * (p * N - P * n)) / (P + N)) * ((P + N) * (P + N) / (P * N * (p + n) * (P + N - p - n)));
 
         //The sensitivity quality measure.
         result.setEvaluation(evaluation);
