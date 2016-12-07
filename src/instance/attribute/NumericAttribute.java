@@ -15,7 +15,7 @@ public class NumericAttribute extends AbstractAttribute {
 
     @Override
     public boolean isPartOfSubgroup(SubGroup subGroup, String value) {
-        return Double.valueOf(value) <= Double.valueOf(subGroup.getValue());
+        return Double.valueOf(value) <= Double.valueOf(subGroup.getValue()) + 0.000001;
     }
 
     @Override

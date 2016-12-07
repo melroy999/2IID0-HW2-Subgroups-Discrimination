@@ -8,7 +8,7 @@ import instance.result.EvaluationResult;
 public class SubGroup implements Comparable<SubGroup> {
     private final AbstractAttribute attribute;
     private final String value;
-    private EvaluationResult evaluation;
+    private EvaluationResult heuristic;
     private final SubGroup subGroup;
 
     public SubGroup(AbstractAttribute attribute, String value) {
@@ -41,11 +41,15 @@ public class SubGroup implements Comparable<SubGroup> {
     }
 
     public EvaluationResult getHeuristic() {
-        return evaluation;
+        return heuristic;
+    }
+
+    public double getEvaluation() {
+        return heuristic.getEvaluation();
     }
 
     public void setEvaluation(EvaluationResult evaluation) {
-        this.evaluation = evaluation;
+        this.heuristic = evaluation;
     }
 
     @Override
@@ -57,7 +61,7 @@ public class SubGroup implements Comparable<SubGroup> {
 
         if (attribute != null ? !attribute.equals(subGroup1.attribute) : subGroup1.attribute != null) return false;
         if (value != null ? !value.equals(subGroup1.value) : subGroup1.value != null) return false;
-        if (evaluation != null ? !evaluation.equals(subGroup1.evaluation) : subGroup1.evaluation != null) return false;
+        if (heuristic != null ? !heuristic.equals(subGroup1.heuristic) : subGroup1.heuristic != null) return false;
         return subGroup != null ? subGroup.equals(subGroup1.subGroup) : subGroup1.subGroup == null;
 
     }
@@ -74,7 +78,7 @@ public class SubGroup implements Comparable<SubGroup> {
     public int hashCode() {
         int result = attribute != null ? attribute.hashCode() : 0;
         result = 31 * result + (value != null ? value.hashCode() : 0);
-        result = 31 * result + (evaluation != null ? evaluation.hashCode() : 0);
+        result = 31 * result + (heuristic != null ? heuristic.hashCode() : 0);
         result = 31 * result + (subGroup != null ? subGroup.hashCode() : 0);
         return result;
     }
@@ -84,9 +88,13 @@ public class SubGroup implements Comparable<SubGroup> {
         return "SubGroup{" +
                 "attribute=" + attribute +
                 ", value='" + (attribute.getType() == Type.NUMERIC ? "<=" : "") + value + '\'' +
-                ", evaluation=" + evaluation +
+                ", heuristic=" + heuristic +
                 ", subGroup=" + subGroup +
                 '}';
+    }
+
+    public String shortNotation() {
+        return attribute.getName() + ((attribute.getType() == Type.NUMERIC ? " <= " : " = ") + value) + (subGroup != null ? " \u2227 " + subGroup.shortNotation() : "");
     }
 
     /**
