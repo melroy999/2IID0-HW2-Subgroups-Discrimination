@@ -9,8 +9,8 @@ import java.util.HashSet;
 public class WeightedRelativeAccuracyHeuristic extends AbstractHeuristic {
 
     @Override
-    public EvaluationResult evaluate(HashSet<SubGroup> seeds, SubGroup subGroup, Instance[] instance) {
-        EvaluationResult result = getConfusionTable(seeds, subGroup, instance);
+    public EvaluationResult evaluate(SubGroup subGroup, Instance[] instance) {
+        EvaluationResult result = getConfusionTable(subGroup, instance);
 
         //The heuristic function as defined in the paper on page 49.
         result.setEvaluation(

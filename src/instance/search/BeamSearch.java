@@ -6,56 +6,81 @@ import instance.attribute.AbstractAttribute;
 import instance.heuristic.AbstractHeuristic;
 import instance.result.EvaluationResult;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 
 public class BeamSearch {
-    public static HashSet<SubGroup> search(ArffFile data, AbstractHeuristic evaluator, int searchDepth, int searchWidth, HashSet<String> blackListed) {
+    public static SubGroup[] search(ArffFile data, AbstractHeuristic evaluator, int searchDepth, int searchWidth, HashSet<String> blackListed) {
+        System.out.println("Performing beam search with search depth " + searchDepth + " and search width " + searchWidth + ".");
+        SubGroup[] seeds = new SubGroup[searchWidth];
 
-        SubGroup bestSubGroup = null;
-        HashSet<SubGroup> seeds = new LinkedHashSet<>();
-        HashSet<AbstractAttribute> seedAttributes = new HashSet<>();
-        AbstractAttribute bestAttribute = null;
+        //Save the results for each depth.
+        SubGroup[][] resultMap = new SubGroup[searchDepth][searchWidth];
+        HashSet<SubGroup> bestGroups = new HashSet<>();
 
-        for(int i = 0; i < searchDepth; i++) {
-            double bestEvaluation = Double.MIN_VALUE;
-
-            System.out.println("> Searching level " + i);
+        for(int level = 0; level < searchDepth; level++) {
+            System.out.println("> Searching level " + (level + 1));
 
             for(AbstractAttribute attribute : data.getAttributes()) {
-                if(seedAttributes.contains(attribute) || blackListed.contains(attribute.getName())) {
-                    System.out.println("Already evaluated attribute " + attribute);
+                if(blackListed.contains(attribute.getName())) {
                     continue;
                 }
 
                 //We don't want to rank the target, only the descriptors.
                 if(attribute.getId() < data.getAttributes().length - 1) {
-                    SubGroup subGroup = searchOnAttribute(data, evaluator, attribute, seeds);
+                    HashSet<SubGroup> bestSubGroups = searchOnAttribute(data, evaluator, attribute, seeds, searchWidth);
 
-                    //Check if we have a better one.
-                    if(subGroup.getEvaluation().getEvaluation() > bestEvaluation) {
-                        bestEvaluation = subGroup.getEvaluation().getEvaluation();
-                        bestSubGroup = subGroup;
-                        bestAttribute = attribute;
+                    for(SubGroup subGroup : bestSubGroups) {
+                        //Check if we have space in the best result list, otherwise remove.
+                        if(bestGroups.size() < searchWidth) {
+                            bestGroups.add(subGroup);
+                        } else {
+                            double worstEvaluationValue = Double.MAX_VALUE;
+                            SubGroup worstSubgroup = null;
+
+                            for(SubGroup sg : bestGroups) {
+                                double eval = sg.getHeuristic().getEvaluation();
+                                if(eval < worstEvaluationValue) {
+                                    worstEvaluationValue = eval;
+                                    worstSubgroup = sg;
+                                }
+                            }
+
+                            bestGroups.remove(worstSubgroup);
+                            bestGroups.add(subGroup);
+                        }
                     }
                 }
             }
 
-            System.out.println(bestSubGroup);
+            int index = 0;
+            for(SubGroup subGroup : bestGroups) {
+                resultMap[level][index] = subGroup;
+                index++;
+            }
 
-            seeds.add(bestSubGroup);
-            seedAttributes.add(bestAttribute);
+            Arrays.sort(resultMap[level]);
+            //Set the new seeds.
+            seeds = resultMap[level];
         }
 
+
+
+        int i = 1;
+        for(SubGroup[] subGroups : resultMap) {
+            System.out.println("Depth " + i + ": " + Arrays.toString(subGroups));
+            i++;
+        }
 
         return seeds;
     }
 
-    private static SubGroup searchOnAttribute(ArffFile data, AbstractHeuristic evaluator, AbstractAttribute attribute, HashSet<SubGroup> seeds) {
+    private static HashSet<SubGroup> searchOnAttribute(ArffFile data, AbstractHeuristic evaluator, AbstractAttribute attribute, SubGroup[] seeds, int searchWidth) {
         //Hold which values have already been considered during the search.
         HashSet<String> visited = new HashSet<>();
-        double bestEvaluation = Integer.MIN_VALUE;
-        SubGroup bestSubGroup = null;
+        HashSet<SubGroup> bestGroups = new HashSet<>();
 
         for(Instance subGroupCandidates : data.getInstances()) {
             String value = subGroupCandidates.getValue(attribute);
@@ -69,23 +94,56 @@ public class BeamSearch {
                 visited.add(value);
             }
 
-            //Create a subgroup for this cutoff value.
-            SubGroup subGroup = new SubGroup(attribute, value);
+            SubGroup[] seededGroups;
+            if(seeds.length == 0) {
+                seededGroups = new SubGroup[]{new SubGroup(attribute, value)};
+            } else {
+                seededGroups = new SubGroup[seeds.length];
+                for(int i = 0; i < seeds.length; i++) {
+                    SubGroup seed = seeds[i];
+                    seededGroups[i] = new SubGroup(attribute, value, seed);
+                }
+            }
 
-            //Evaluate this subgroup, by incrementing for instances in subgroup with positive target,
-            //and decrement for instances not in subgroup with positive target.
-            EvaluationResult evaluation = evaluator.evaluate(seeds, subGroup, data.getInstances());
+            for(SubGroup subGroup : seededGroups) {
+                //If the subgroup contains duplicates, skip.
+                if(subGroup.getSubGroup() != null && subGroup.getSubGroup().hasSimilarSubgroup(attribute, value)) {
+                    continue;
+                }
 
-            //Set the evaluation for the subgroup.
-            subGroup.setEvaluation(evaluation);
+                //Evaluate this subgroup, by incrementing for instances in subgroup with positive target,
+                //and decrement for instances not in subgroup with positive target.
+                EvaluationResult evaluation = evaluator.evaluate(subGroup, data.getInstances());
 
-            //Check if we have a better one.
-            if(evaluation.getEvaluation() > bestEvaluation) {
-                bestEvaluation = evaluation.getEvaluation();
-                bestSubGroup = subGroup;
+                //Make sure we do not get NaN or the sorts.
+                if(!Double.isFinite(evaluation.getEvaluation())) {
+                    evaluation.setEvaluation(-1);
+                }
+
+                //Set the evaluation for the subgroup.
+                subGroup.setEvaluation(evaluation);
+
+                //Check if we have space in the best result list, otherwise remove.
+                if(bestGroups.size() < searchWidth) {
+                    bestGroups.add(subGroup);
+                } else {
+                    double worstEvaluationValue = Double.MAX_VALUE;
+                    SubGroup worstSubgroup = null;
+
+                    for(SubGroup sg : bestGroups) {
+                        double eval = sg.getHeuristic().getEvaluation();
+                        if(eval < worstEvaluationValue) {
+                            worstEvaluationValue = sg.getHeuristic().getEvaluation();
+                            worstSubgroup = sg;
+                        }
+                    }
+
+                    bestGroups.remove(worstSubgroup);
+                    bestGroups.add(subGroup);
+                }
             }
         }
 
-        return bestSubGroup;
+        return bestGroups;
     }
 }

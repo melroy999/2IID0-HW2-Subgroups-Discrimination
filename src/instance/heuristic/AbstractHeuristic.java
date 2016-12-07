@@ -7,31 +7,16 @@ import instance.search.SubGroup;
 import java.util.HashSet;
 
 public abstract class AbstractHeuristic {
-    public abstract EvaluationResult evaluate(HashSet<SubGroup> seeds, SubGroup subGroup, Instance[] instance);
+    public abstract EvaluationResult evaluate(SubGroup subGroup, Instance[] instance);
 
-    protected boolean isPartOfSubgroups(HashSet<SubGroup> seeds, SubGroup currentSubGroup, Instance instance) {
-        boolean result = currentSubGroup.isPartOfSubgroup(instance);
-
-        for(SubGroup subGroup : seeds) {
-            if(!result) {
-                break;
-            }
-
-            //Already checked for true, so can forget previous value of result.
-            result = subGroup.isPartOfSubgroup(instance);
-        }
-
-        return result;
-    }
-
-    protected EvaluationResult getConfusionTable(HashSet<SubGroup> seeds, SubGroup subGroup, Instance[] instances) {
+    protected EvaluationResult getConfusionTable(SubGroup subGroup, Instance[] instances) {
         double coveredPositive = 0;
         double coveredNegative = 0;
         double notCoveredPositive = 0;
         double notCoveredNegative = 0;
 
         for(Instance instance : instances) {
-            if(isPartOfSubgroups(seeds, subGroup, instance)) {
+            if(subGroup.isPartOfSubgroup(instance)) {
                 if(instance.getTarget().equals("1")) {
                     coveredPositive++;
                 } else {

@@ -1,8 +1,10 @@
 import instance.ArffFile;
 import instance.heuristic.WeightedRelativeAccuracyHeuristic;
 import instance.search.BeamSearch;
+import instance.search.SubGroup;
 import reader.ArffReader;
 
+import java.util.Arrays;
 import java.util.HashSet;
 
 public class Main {
@@ -12,7 +14,10 @@ public class Main {
 
             HashSet<String> blacklist = new HashSet<>();
             blacklist.add("decision_o");
-            System.out.println(BeamSearch.search(file, new WeightedRelativeAccuracyHeuristic(), 4, 1, blacklist));
+
+            for(SubGroup subGroup : BeamSearch.search(file, new WeightedRelativeAccuracyHeuristic(), 4, 5, blacklist)) {
+                System.out.println(subGroup);
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
