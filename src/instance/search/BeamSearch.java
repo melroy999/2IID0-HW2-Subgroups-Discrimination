@@ -55,6 +55,7 @@ public class BeamSearch {
                 resultMap[level][index] = subGroup;
                 index++;
             }
+            Arrays.sort(resultMap[level]);
 
             //Set the new seeds.
             seeds = new HashSet<>(Arrays.asList(resultMap[level]));
@@ -102,6 +103,11 @@ public class BeamSearch {
                 //Evaluate this subgroup, by incrementing for instances in subgroup with positive target,
                 //and decrement for instances not in subgroup with positive target.
                 EvaluationResult evaluation = evaluator.evaluate(subGroup, data.getInstances());
+
+                //Check whether the subgroup is actually a subgroup, and not the complete set.
+                if(evaluation.getCoveredPositive() + evaluation.getCoveredNegative() == evaluation.getPositiveCount() + evaluation.getNegativeCount()) {
+                    continue;
+                }
 
                 //Make sure we do not get NaN or the sorts.
                 if(!Double.isFinite(evaluation.getEvaluation())) {
