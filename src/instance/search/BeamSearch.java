@@ -6,15 +6,12 @@ import instance.attribute.AbstractAttribute;
 import instance.heuristic.AbstractHeuristic;
 import instance.result.EvaluationResult;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
+import java.util.*;
 
 public class BeamSearch {
     public static SubGroup[] search(ArffFile data, AbstractHeuristic evaluator, int searchDepth, int searchWidth, HashSet<String> blackListed) {
         System.out.println("Performing beam search with search depth " + searchDepth + " and search width " + searchWidth + ".");
-        SubGroup[] seeds = new SubGroup[searchWidth];
+        HashSet<SubGroup> seeds = new HashSet<>();
 
         //Save the results for each depth.
         SubGroup[][] resultMap = new SubGroup[searchDepth][searchWidth];
@@ -61,23 +58,29 @@ public class BeamSearch {
                 index++;
             }
 
-            Arrays.sort(resultMap[level]);
             //Set the new seeds.
-            seeds = resultMap[level];
+            seeds = new HashSet<>(Arrays.asList(resultMap[level]));
         }
 
 
 
         int i = 1;
         for(SubGroup[] subGroups : resultMap) {
-            System.out.println("Depth " + i + ": " + Arrays.toString(subGroups));
+            Arrays.sort(subGroups);
+            System.out.println("Depth " + i + ": ");
+            for(SubGroup subGroup : subGroups) {
+                System.out.println(subGroup);
+            }
             i++;
         }
+        System.out.println();
 
-        return seeds;
+        SubGroup[] result = resultMap[searchDepth - 1];
+        Arrays.sort(result);
+        return result;
     }
 
-    private static HashSet<SubGroup> searchOnAttribute(ArffFile data, AbstractHeuristic evaluator, AbstractAttribute attribute, SubGroup[] seeds, int searchWidth) {
+    private static HashSet<SubGroup> searchOnAttribute(ArffFile data, AbstractHeuristic evaluator, AbstractAttribute attribute, HashSet<SubGroup> seeds, int searchWidth) {
         //Hold which values have already been considered during the search.
         HashSet<String> visited = new HashSet<>();
         HashSet<SubGroup> bestGroups = new HashSet<>();
@@ -95,13 +98,15 @@ public class BeamSearch {
             }
 
             SubGroup[] seededGroups;
-            if(seeds.length == 0) {
+            if(seeds.size() == 0) {
                 seededGroups = new SubGroup[]{new SubGroup(attribute, value)};
             } else {
-                seededGroups = new SubGroup[seeds.length];
-                for(int i = 0; i < seeds.length; i++) {
-                    SubGroup seed = seeds[i];
+                seededGroups = new SubGroup[seeds.size()];
+
+                int i = 0;
+                for(SubGroup seed : seeds) {
                     seededGroups[i] = new SubGroup(attribute, value, seed);
+                    i++;
                 }
             }
 

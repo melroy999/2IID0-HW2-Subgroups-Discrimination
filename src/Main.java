@@ -15,7 +15,7 @@ public class Main {
             HashSet<String> blacklist = new HashSet<>();
             blacklist.add("decision_o");
 
-            for(SubGroup subGroup : BeamSearch.search(file, new WeightedRelativeAccuracyHeuristic(), 4, 5, blacklist)) {
+            for(SubGroup subGroup : BeamSearch.search(file, new WeightedRelativeAccuracyHeuristic(), 5, 5, blacklist)) {
                 System.out.println(subGroup);
             }
         } catch (Exception e) {

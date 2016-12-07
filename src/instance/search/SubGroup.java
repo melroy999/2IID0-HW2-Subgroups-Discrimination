@@ -131,6 +131,12 @@ public class SubGroup implements Comparable<SubGroup> {
     public int compareTo(SubGroup o) {
         double evalThis = this.getHeuristic().getEvaluation();
         double evalO = o.getHeuristic().getEvaluation();
-        return (evalThis - evalO) * (evalThis - evalO) < 0.00001d ? 0 : evalThis > evalO ? 1 : -1;
+        if(evalThis - evalO == 0) {
+            return 0;
+        } else if(evalThis > evalO) {
+            return -1;
+        } else {
+            return 1;
+        }
     }
 }
