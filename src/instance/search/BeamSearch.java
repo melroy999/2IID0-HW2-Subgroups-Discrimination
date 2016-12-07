@@ -109,6 +109,15 @@ public class BeamSearch {
                     continue;
                 }
 
+                //Check if the length of this set is different from the subset.
+                if(subGroup.getSubGroup() != null) {
+                    EvaluationResult subGroupEvaluation = subGroup.getSubGroup().getHeuristic();
+                    //Check if we have equal counts.
+                    if(evaluation.getCoveredPositive() == subGroupEvaluation.getCoveredPositive() && evaluation.getCoveredNegative() == subGroupEvaluation.getCoveredNegative()) {
+                        continue;
+                    }
+                }
+
                 //Make sure we do not get NaN or the sorts.
                 if(!Double.isFinite(evaluation.getEvaluation())) {
                     evaluation.setEvaluation(-1);

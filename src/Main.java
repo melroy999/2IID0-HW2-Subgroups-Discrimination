@@ -1,4 +1,6 @@
 import instance.ArffFile;
+import instance.Instance;
+import instance.attribute.AbstractAttribute;
 import instance.heuristic.SensitivityQualityMeasureHeuristic;
 import instance.heuristic.SpecificityQualityMeasureHeuristic;
 import instance.heuristic.WeightedRelativeAccuracyHeuristic;
@@ -7,10 +9,14 @@ import instance.search.BeamSearch;
 import instance.search.SubGroup;
 import reader.ArffReader;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Arrays;
 import java.util.HashSet;
 
 public class Main {
+    private static final int DECIMAL_PLACES = 15;
+
     public static void main(String[] args) {
         try {
             ArffFile file = ArffReader.getArffFile("/dataset.arff");
@@ -22,7 +28,7 @@ public class Main {
             System.out.println("((p + n) / (P + N)) * (p / (p + n) - P / (P + N))");
             SubGroup[][] wraResult = BeamSearch.search(file, new WeightedRelativeAccuracyHeuristic(), 2, 5, blacklist);
             for(SubGroup subGroup : wraResult[wraResult.length - 1]) {
-                System.out.println("(eval: " + subGroup.getEvaluation() + "): \t\t" + subGroup.shortNotation());
+                System.out.println("(eval: " + String.format("%." + DECIMAL_PLACES + "f", subGroup.getEvaluation()) + "): \t\t" + subGroup.shortNotation());
             }
             System.out.println();
 
@@ -30,7 +36,7 @@ public class Main {
             System.out.println("p / P");
             SubGroup[][] sensitivityResult = BeamSearch.search(file, new SensitivityQualityMeasureHeuristic(), 2, 5, blacklist);
             for(SubGroup subGroup : sensitivityResult[sensitivityResult.length - 1]) {
-                System.out.println("(eval: " + subGroup.getEvaluation() + "): \t\t" + subGroup.shortNotation());
+                System.out.println("(eval: " + String.format("%." + DECIMAL_PLACES + "f", subGroup.getEvaluation()) + "): \t\t" + subGroup.shortNotation());
             }
             System.out.println();
 
@@ -38,7 +44,7 @@ public class Main {
             System.out.println("1 - n / N");
             SubGroup[][] specificityResult = BeamSearch.search(file, new SpecificityQualityMeasureHeuristic(), 2, 5, blacklist);
             for(SubGroup subGroup : specificityResult[specificityResult.length - 1]) {
-                System.out.println("(eval: " + subGroup.getEvaluation() + "): \t\t" + subGroup.shortNotation());
+                System.out.println("(eval: " + String.format("%." + DECIMAL_PLACES + "f", subGroup.getEvaluation()) + "): \t\t" + subGroup.shortNotation());
             }
             System.out.println();
 
@@ -46,7 +52,7 @@ public class Main {
             System.out.println("((p * N - P * n) * (p * N - P * n) / (P + N)) * ((P + N) * (P + N) / (P * N * (p + n) * (P + N - p - n)))");
             SubGroup[][] x2Result = BeamSearch.search(file, new X2Heuristic(), 5, 5, blacklist);
             for(SubGroup subGroup : x2Result[x2Result.length - 1]) {
-                System.out.println("(eval: " + subGroup.getEvaluation() + "): \t\t" + subGroup.shortNotation());
+                System.out.println("(eval: " + String.format("%." + DECIMAL_PLACES + "f", subGroup.getEvaluation()) + "): \t\t" + subGroup.shortNotation());
             }
 
         } catch (Exception e) {
