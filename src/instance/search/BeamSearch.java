@@ -3,14 +3,14 @@ package instance.search;
 import instance.ArffFile;
 import instance.Instance;
 import instance.attribute.AbstractAttribute;
-import instance.evaluate.AbstractEvaluator;
+import instance.heuristic.AbstractHeuristic;
 import instance.result.EvaluationResult;
 
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 
 public class BeamSearch {
-    public static HashSet<SubGroup> search(ArffFile data, AbstractEvaluator evaluator, int searchDepth, int searchWidth, HashSet<String> blackListed) {
+    public static HashSet<SubGroup> search(ArffFile data, AbstractHeuristic evaluator, int searchDepth, int searchWidth, HashSet<String> blackListed) {
 
         SubGroup bestSubGroup = null;
         HashSet<SubGroup> seeds = new LinkedHashSet<>();
@@ -51,7 +51,7 @@ public class BeamSearch {
         return seeds;
     }
 
-    private static SubGroup searchOnAttribute(ArffFile data, AbstractEvaluator evaluator, AbstractAttribute attribute, HashSet<SubGroup> seeds) {
+    private static SubGroup searchOnAttribute(ArffFile data, AbstractHeuristic evaluator, AbstractAttribute attribute, HashSet<SubGroup> seeds) {
         //Hold which values have already been considered during the search.
         HashSet<String> visited = new HashSet<>();
         double bestEvaluation = Integer.MIN_VALUE;

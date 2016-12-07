@@ -1,11 +1,8 @@
 import instance.ArffFile;
-import instance.attribute.AbstractAttribute;
-import instance.evaluate.SimpleEvaluator;
+import instance.heuristic.WeightedRelativeAccuracyHeuristic;
 import instance.search.BeamSearch;
 import reader.ArffReader;
 
-import java.io.IOException;
-import java.util.Arrays;
 import java.util.HashSet;
 
 public class Main {
@@ -15,7 +12,7 @@ public class Main {
 
             HashSet<String> blacklist = new HashSet<>();
             blacklist.add("decision_o");
-            System.out.println(BeamSearch.search(file, new SimpleEvaluator(), 4, 1, blacklist));
+            System.out.println(BeamSearch.search(file, new WeightedRelativeAccuracyHeuristic(), 4, 1, blacklist));
         } catch (Exception e) {
             e.printStackTrace();
         }

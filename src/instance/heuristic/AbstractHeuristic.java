@@ -1,4 +1,4 @@
-package instance.evaluate;
+package instance.heuristic;
 
 import instance.Instance;
 import instance.result.EvaluationResult;
@@ -6,7 +6,7 @@ import instance.search.SubGroup;
 
 import java.util.HashSet;
 
-public abstract class AbstractEvaluator {
+public abstract class AbstractHeuristic {
     public abstract EvaluationResult evaluate(HashSet<SubGroup> seeds, SubGroup subGroup, Instance[] instance);
 
     protected boolean isPartOfSubgroups(HashSet<SubGroup> seeds, SubGroup currentSubGroup, Instance instance) {
@@ -25,28 +25,27 @@ public abstract class AbstractEvaluator {
     }
 
     protected EvaluationResult getConfusionTable(HashSet<SubGroup> seeds, SubGroup subGroup, Instance[] instances) {
-        double positive = 0;
-        double negative = 0;
-        double falsePositive = 0;
-        double falseNegative = 0;
-        int instancesInSubgroup = 0;
+        double coveredPositive = 0;
+        double coveredNegative = 0;
+        double notCoveredPositive = 0;
+        double notCoveredNegative = 0;
+
         for(Instance instance : instances) {
             if(isPartOfSubgroups(seeds, subGroup, instance)) {
-                instancesInSubgroup++;
                 if(instance.getTarget().equals("1")) {
-                    positive++;
+                    coveredPositive++;
                 } else {
-                    falsePositive++;
+                    coveredNegative++;
                 }
             } else {
                 if(instance.getTarget().equals("1")) {
-                    falseNegative++;
+                    notCoveredPositive++;
                 } else {
-                    negative++;
+                    notCoveredNegative++;
                 }
             }
         }
 
-        return new EvaluationResult(positive, negative, falsePositive, falseNegative, instancesInSubgroup);
+        return new EvaluationResult(coveredPositive, notCoveredPositive, coveredNegative, notCoveredNegative);
     }
 }

@@ -1,45 +1,63 @@
 package instance.result;
 
 public class EvaluationResult {
-    private final double positive;
-    private final double negative;
-    private final double falsePositive;
-    private final double falseNegative;
-    private final double sum;
-    private final int instancesInSubgroup;
+    private final double coveredPositive;
+    private final double coveredNegative;
+    private final double notCoveredPositive;
+    private final double notCoveredNegative;
+    private final double coveredInstancesCount;
+    private final double nonCoveredInstancesCount;
+    private final double positiveCount;
+    private final double negativeCount;
+    private final double totalInstances;
     private double evaluation;
 
-    public EvaluationResult(double positive, double negative, double falsePositive, double falseNegative, int instancesInSubgroup) {
-        this.positive = positive;
-        this.negative = negative;
-        this.falsePositive = falsePositive;
-        this.falseNegative = falseNegative;
-        this.sum = positive + negative - falsePositive - falseNegative;
-        this.instancesInSubgroup = instancesInSubgroup;
+    public EvaluationResult(double coveredPositive, double notCoveredPositive, double coveredNegative, double notCoveredNegative) {
+        this.coveredPositive = coveredPositive;
+        this.notCoveredPositive = notCoveredPositive;
+        this.coveredNegative = coveredNegative;
+        this.notCoveredNegative = notCoveredNegative;
+        this.coveredInstancesCount = coveredPositive + coveredNegative;
+        this.nonCoveredInstancesCount = notCoveredPositive + notCoveredNegative;
+        this.positiveCount = coveredPositive + notCoveredPositive;
+        this.negativeCount = coveredNegative + notCoveredNegative;
+        this.totalInstances = this.positiveCount + this.negativeCount;
     }
 
-    public double getPositive() {
-        return positive;
+    public double getCoveredPositive() {
+        return coveredPositive;
     }
 
-    public double getNegative() {
-        return negative;
+    public double getCoveredNegative() {
+        return coveredNegative;
     }
 
-    public double getFalsePositive() {
-        return falsePositive;
+    public double getNotCoveredPositive() {
+        return notCoveredPositive;
     }
 
-    public double getFalseNegative() {
-        return falseNegative;
+    public double getNotCoveredNegative() {
+        return notCoveredNegative;
     }
 
-    public double getSum() {
-        return sum;
+    public double getCoveredInstancesCount() {
+        return coveredInstancesCount;
     }
 
-    public int getInstancesInSubgroup() {
-        return instancesInSubgroup;
+    public double getNonCoveredInstancesCount() {
+        return nonCoveredInstancesCount;
+    }
+
+    public double getPositiveCount() {
+        return positiveCount;
+    }
+
+    public double getNegativeCount() {
+        return negativeCount;
+    }
+
+    public double getTotalInstances() {
+        return totalInstances;
     }
 
     public double getEvaluation() {
@@ -50,29 +68,19 @@ public class EvaluationResult {
         this.evaluation = evaluation;
     }
 
-    public double positivePercentOfPositiveClass() {
-        double positiveSpaceSize = getPositive() + getFalsePositive();
-        positiveSpaceSize = positiveSpaceSize == 0 ? -1 : positiveSpaceSize;
-        return getPositive() / positiveSpaceSize;
-    }
-
-    public double negativePercentOfNegativeClass() {
-        double negativeSpaceSize = getNegative() + getFalseNegative();
-        negativeSpaceSize = negativeSpaceSize == 0 ? -1 : negativeSpaceSize;
-        return getNegative() / negativeSpaceSize;
-    }
-
     @Override
     public String toString() {
         return "EvaluationResult{" +
-                "positive=" + positive +
-                ", negative=" + negative +
-                ", falsePositive=" + falsePositive +
-                ", falseNegative=" + falseNegative +
-                ", sum=" + sum +
-                ", instancesInSubgroup=" + instancesInSubgroup +
-                ", %1class=" + positivePercentOfPositiveClass() +
-                ", %0class=" + negativePercentOfNegativeClass() +
+                "p=" + coveredPositive +
+                ", n=" + coveredNegative +
+                ", P-p=" + notCoveredPositive +
+                ", N-n=" + notCoveredNegative +
+                ", p+n=" + coveredInstancesCount +
+                ", N+P-p-n=" + nonCoveredInstancesCount +
+                ", p+P=" + positiveCount +
+                ", n+N=" + negativeCount +
+                ", N+P=" + totalInstances +
+                ", evaluation=" + evaluation +
                 '}';
     }
 }
