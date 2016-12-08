@@ -47,7 +47,7 @@ public class BeamSearch {
                             SubGroup worstSubgroup = null;
 
                             for(SubGroup sg : bestGroups) {
-                                double eval = sg.getHeuristic().getEvaluation();
+                                double eval = sg.getHeuristic().getEvaluationValue();
                                 if(eval < worstEvaluationValue) {
                                     worstEvaluationValue = eval;
                                     worstSubgroup = sg;
@@ -112,6 +112,22 @@ public class BeamSearch {
                     continue;
                 }
 
+                //Evaluate this subgroup.
+                EvaluationResult evaluation = evaluator.evaluate(subGroup, data.getInstances());
+
+                //Make sure we do not get NaN or the sorts.
+                if(!Double.isFinite(evaluation.getEvaluationValue())) {
+                    evaluation.setEvaluation(-1);
+                }
+
+                //Set the evaluation for the subgroup.
+                subGroup.setEvaluation(evaluation);
+
+                //Check whether the subgroup is actually a subgroup, and not the complete set.
+                if(evaluation.getCoveredPositive() + evaluation.getCoveredNegative() == evaluation.getPositiveCount() + evaluation.getNegativeCount()) {
+                    continue;
+                }
+
                 //Check whether one of the seeds already contains ALL of the attributes, with the exact same values.
                 for(SubGroup sg : seeds) {
                     if(sg.recursiveHasAllSubgroups(subGroup, allowSubgroupWithDifferentValues)) {
@@ -119,19 +135,24 @@ public class BeamSearch {
                     }
                 }
 
+                SubGroup toReplace = null;
                 //Check whether one of the subgroups in the best groups list already contains ALL of the attributes, with the exact same values.
                 for(SubGroup sg : bestGroups) {
                     if(sg.recursiveHasAllSubgroups(subGroup, allowSubgroupWithDifferentValues)) {
-                        continue subGroupLoop;
+                        //Check whether we improve that specific subgroup by doing this. If so, replace it.
+                        if(evaluation.getEvaluationValue() > sg.getEvaluation()) {
+                            toReplace = sg;
+                            break;
+                        } else {
+                            continue subGroupLoop;
+                        }
                     }
                 }
 
-                //Evaluate this subgroup, by incrementing for instances in subgroup with positive target,
-                //and decrement for instances not in subgroup with positive target.
-                EvaluationResult evaluation = evaluator.evaluate(subGroup, data.getInstances());
-
-                //Check whether the subgroup is actually a subgroup, and not the complete set.
-                if(evaluation.getCoveredPositive() + evaluation.getCoveredNegative() == evaluation.getPositiveCount() + evaluation.getNegativeCount()) {
+                //Replace in subgroup.
+                if(toReplace != null) {
+                    bestGroups.remove(toReplace);
+                    bestGroups.add(subGroup);
                     continue;
                 }
 
@@ -144,14 +165,6 @@ public class BeamSearch {
                     }
                 }
 
-                //Make sure we do not get NaN or the sorts.
-                if(!Double.isFinite(evaluation.getEvaluation())) {
-                    evaluation.setEvaluation(-1);
-                }
-
-                //Set the evaluation for the subgroup.
-                subGroup.setEvaluation(evaluation);
-
                 //Check if we have space in the best result list, otherwise remove.
                 if(bestGroups.size() < searchWidth) {
                     bestGroups.add(subGroup);
@@ -160,9 +173,9 @@ public class BeamSearch {
                     SubGroup worstSubgroup = null;
 
                     for(SubGroup sg : bestGroups) {
-                        double eval = sg.getHeuristic().getEvaluation();
+                        double eval = sg.getHeuristic().getEvaluationValue();
                         if(eval < worstEvaluationValue) {
-                            worstEvaluationValue = sg.getHeuristic().getEvaluation();
+                            worstEvaluationValue = sg.getHeuristic().getEvaluationValue();
                             worstSubgroup = sg;
                         }
                     }

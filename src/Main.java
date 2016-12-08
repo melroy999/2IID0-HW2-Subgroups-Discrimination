@@ -16,16 +16,25 @@ import java.util.HashSet;
 
 public class Main {
     private static final int DECIMAL_PLACES = 15;
-    private static final int SEARCH_DEPTH = 3;
-    private static final int SEARCH_WIDTH = 10;
+    private static int SEARCH_DEPTH = 3;
+    private static int SEARCH_WIDTH = 10;
     private static final boolean allowSubgroupWithDifferentValues = false;
 
     public static void main(String[] args) {
+        if(args.length < 2) {
+            System.out.println("Taking default values SEARCH_DEPTH = " + SEARCH_DEPTH + ", SEARCH_WIDTH = " + SEARCH_WIDTH + ".");
+        } else {
+            SEARCH_DEPTH = Integer.valueOf(args[0]);
+            SEARCH_DEPTH = Integer.valueOf(args[1]);
+            System.out.println("Taking values SEARCH_DEPTH = " + SEARCH_DEPTH + ", SEARCH_WIDTH = " + SEARCH_WIDTH + ".");
+        }
+
         try {
             ArffFile file = ArffReader.getArffFile("/dataset.arff");
 
             HashSet<String> blacklist = new HashSet<>();
             blacklist.add("decision_o");
+            blacklist.add("decision");
 
             System.out.println("= Weighted relative accuracy ===============================================================================");
             System.out.println("((p + n) / (P + N)) * (p / (p + n) - P / (P + N))");

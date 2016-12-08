@@ -5,8 +5,6 @@ import instance.Type;
 import instance.attribute.AbstractAttribute;
 import instance.result.EvaluationResult;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
 
 public class SubGroup implements Comparable<SubGroup> {
@@ -49,7 +47,7 @@ public class SubGroup implements Comparable<SubGroup> {
     }
 
     public double getEvaluation() {
-        return heuristic.getEvaluation();
+        return heuristic.getEvaluationValue();
     }
 
     public void setEvaluation(EvaluationResult evaluation) {
@@ -81,17 +79,17 @@ public class SubGroup implements Comparable<SubGroup> {
     public boolean recursiveHasAllSubgroups(SubGroup sg2, boolean allowSubgroupWithDifferentValues) {
         SubGroup sg1 = this;
         HashSet<String> thisAttributes = new HashSet<>();
-        thisAttributes.add(sg1.getAttribute().getName() + (allowSubgroupWithDifferentValues ? "" : sg1.getValue()));
+        thisAttributes.add(sg1.getAttribute().getName() + (!allowSubgroupWithDifferentValues ? "" : sg1.getValue()));
         while(sg1.getSubGroup() != null) {
             sg1 = sg1.getSubGroup();
-            thisAttributes.add(sg1.getAttribute().getName() + (allowSubgroupWithDifferentValues ? "" : sg1.getValue()));
+            thisAttributes.add(sg1.getAttribute().getName() + (!allowSubgroupWithDifferentValues ? "" : sg1.getValue()));
         }
 
         HashSet<String> subGroupAttributes = new HashSet<>();
-        subGroupAttributes.add(sg2.getAttribute().getName() + (allowSubgroupWithDifferentValues ? "" : sg2.getValue()));
+        subGroupAttributes.add(sg2.getAttribute().getName() + (!allowSubgroupWithDifferentValues ? "" : sg2.getValue()));
         while(sg2.getSubGroup() != null) {
             sg2 = sg2.getSubGroup();
-            subGroupAttributes.add(sg2.getAttribute().getName() + (allowSubgroupWithDifferentValues ? "" : sg2.getValue()));
+            subGroupAttributes.add(sg2.getAttribute().getName() + (!allowSubgroupWithDifferentValues ? "" : sg2.getValue()));
         }
 
         return thisAttributes.equals(subGroupAttributes);
@@ -160,8 +158,8 @@ public class SubGroup implements Comparable<SubGroup> {
      */
     @Override
     public int compareTo(SubGroup o) {
-        double evalThis = this.getHeuristic().getEvaluation();
-        double evalO = o.getHeuristic().getEvaluation();
+        double evalThis = this.getHeuristic().getEvaluationValue();
+        double evalO = o.getHeuristic().getEvaluationValue();
         if(evalThis - evalO == 0) {
             return 0;
         } else if(evalThis > evalO) {

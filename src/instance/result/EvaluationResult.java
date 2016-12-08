@@ -34,7 +34,7 @@ public class EvaluationResult {
         return negativeCount;
     }
 
-    public double getEvaluation() {
+    public double getEvaluationValue() {
         return evaluation;
     }
 
