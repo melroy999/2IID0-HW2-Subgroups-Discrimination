@@ -16,8 +16,8 @@ import java.util.HashSet;
 
 public class Main {
     private static final int DECIMAL_PLACES = 15;
-    private static int SEARCH_DEPTH = 3;
-    private static int SEARCH_WIDTH = 10;
+    private static int SEARCH_DEPTH = 5;
+    private static int SEARCH_WIDTH = 5;
     private static final boolean allowSubgroupWithDifferentValues = false;
 
     public static void main(String[] args) {
@@ -25,7 +25,7 @@ public class Main {
             System.out.println("Taking default values SEARCH_DEPTH = " + SEARCH_DEPTH + ", SEARCH_WIDTH = " + SEARCH_WIDTH + ".");
         } else {
             SEARCH_DEPTH = Integer.valueOf(args[0]);
-            SEARCH_DEPTH = Integer.valueOf(args[1]);
+            SEARCH_WIDTH = Integer.valueOf(args[1]);
             System.out.println("Taking values SEARCH_DEPTH = " + SEARCH_DEPTH + ", SEARCH_WIDTH = " + SEARCH_WIDTH + ".");
         }
 

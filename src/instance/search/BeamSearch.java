@@ -81,7 +81,7 @@ public class BeamSearch {
         HashSet<String> visited = new HashSet<>();
         HashSet<SubGroup> bestGroups = new HashSet<>();
 
-        for(Instance subGroupCandidates : data.getInstances()) {
+        mainLoop: for(Instance subGroupCandidates : data.getInstances()) {
             String value = subGroupCandidates.getValue(attribute);
 
             //Skip when subGroup has already been observed, or when the value is unknown.
@@ -125,12 +125,21 @@ public class BeamSearch {
 
                 //Check whether the subgroup is actually a subgroup, and not the complete set.
                 if(evaluation.getCoveredPositive() + evaluation.getCoveredNegative() == evaluation.getPositiveCount() + evaluation.getNegativeCount()) {
-                    continue;
+                    continue mainLoop;
                 }
 
                 //Check whether one of the seeds already contains ALL of the attributes, with the exact same values.
                 for(SubGroup sg : seeds) {
                     if(sg.recursiveHasAllSubgroups(subGroup, allowSubgroupWithDifferentValues)) {
+                        continue subGroupLoop;
+                    }
+                }
+
+                //Check if the length of this set is different from the subset.
+                if(subGroup.getSubGroup() != null) {
+                    EvaluationResult subGroupEvaluation = subGroup.getSubGroup().getHeuristic();
+                    //Check if we have equal counts.
+                    if(evaluation.getCoveredPositive() == subGroupEvaluation.getCoveredPositive() && evaluation.getCoveredNegative() == subGroupEvaluation.getCoveredNegative()) {
                         continue subGroupLoop;
                     }
                 }
@@ -154,15 +163,6 @@ public class BeamSearch {
                     bestGroups.remove(toReplace);
                     bestGroups.add(subGroup);
                     continue;
-                }
-
-                //Check if the length of this set is different from the subset.
-                if(subGroup.getSubGroup() != null) {
-                    EvaluationResult subGroupEvaluation = subGroup.getSubGroup().getHeuristic();
-                    //Check if we have equal counts.
-                    if(evaluation.getCoveredPositive() == subGroupEvaluation.getCoveredPositive() && evaluation.getCoveredNegative() == subGroupEvaluation.getCoveredNegative()) {
-                        continue;
-                    }
                 }
 
                 //Check if we have space in the best result list, otherwise remove.
