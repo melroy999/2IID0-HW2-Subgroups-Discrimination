@@ -119,6 +119,10 @@ public class HeuristicResult {
 
         //Evaluate the confusion table.
         double evaluation = heuristic.evaluate(result.getCoveredPositive(), result.getCoveredNegative(), result.getPositiveCount(), result.getNegativeCount());
+
+        //Make sure that we do not get NaN errors.
+        evaluation = Double.isFinite(evaluation) ? evaluation : Integer.MIN_VALUE;
+
         result.setEvaluation(evaluation);
         return result;
     }
