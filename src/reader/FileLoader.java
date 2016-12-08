@@ -8,6 +8,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+/**
+ * Helper class for file loading.
+ */
 public class FileLoader {
     /**
      * Tries to load the given file.

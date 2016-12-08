@@ -1,33 +1,65 @@
 package instance.attribute;
 
-import instance.Type;
-import instance.search.SubGroup;
+import instance.object.Type;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * Abstract representation of an attribute.
+ */
 public abstract class AbstractAttribute {
+    //Pattern used for attribute detection.
     private static final Pattern ATTRIBUTE_MATCH_PATTERN = Pattern.compile("@attribute\\s+([']?(?:[^']*)[']?)\\s+[{]?(.*?)[}]?");
+
+    //Values representing an attribute.
     private final String name;
     private final int id;
 
-    protected AbstractAttribute(String name, int id) {
+    /**
+     * Create an attribute.
+     *
+     * @param name The name of the attribute.
+     * @param id The id of the attribute.
+     */
+    public AbstractAttribute(String name, int id) {
         this.name = name;
         this.id = id;
     }
 
+    /**
+     * Get the name of the attribute.
+     *
+     * @return The name of the attribute.
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * Get the id of the attribute.
+     *
+     * @return The id of the attribute.
+     */
     public int getId() {
         return id;
     }
 
+    /**
+     * Get the type of the attribute.
+     *
+     * @return The type of the attribute.
+     */
     public abstract Type getType();
 
-    public abstract boolean isPartOfSubgroup(SubGroup subGroup, String value);
-
+    /**
+     * Extract the attribute from the line, and create it.
+     *
+     * @param line The line to parse.
+     * @param id The id to give the attribute.
+     * @return An attribute object corresponding to the given line.
+     * @throws Exception Throws an exception if no attributes can be found in the given line.
+     */
     public static AbstractAttribute getAttribute(String line, int id) throws Exception {
         //Get the pattern matches.
         Matcher matches = ATTRIBUTE_MATCH_PATTERN.matcher(line);
@@ -60,6 +92,11 @@ public abstract class AbstractAttribute {
         return null;
     }
 
+    /**
+     * Converts the attribute to its string representation.
+     *
+     * @return The name of the attribute, with @attribute as prefix.
+     */
     @Override
     public String toString() {
         return "@attribute " + getName();
