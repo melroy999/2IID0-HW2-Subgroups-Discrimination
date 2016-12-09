@@ -19,10 +19,12 @@ public class Instance {
      */
     public Instance(String line, int target) {
         //Parse the string manually instead of splitting it, as the data containsInstance some annoying inputs that split cannot handle.
-        List<String> components = parseString(line);
+        //List<String> components = parseString(line);
 
         //Convert to array and set.
-        this.values = components.toArray(new String[components.size()]);
+        //this.values = components.toArray(new String[components.size()]);
+
+        this.values = line.split(",");
 
         //Set the target index.
         this.target = target;

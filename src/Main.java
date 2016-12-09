@@ -37,7 +37,7 @@ public class Main {
             printFullResultArray(wraResult);
             printEqualityCheck(wraResult);
 
-            System.out.println("= Sensitivity quality measure ==============================================================================");
+            /*System.out.println("= Sensitivity quality measure ==============================================================================");
             System.out.println("Heuristic: p / P");
             Group[][] sensitivityResult = BeamSearch.search(file, new SensitivityQualityMeasureHeuristic(), SEARCH_WIDTH, SEARCH_DEPTH, checkValue, blacklist);
             printFullResultArray(sensitivityResult);
@@ -53,7 +53,7 @@ public class Main {
             System.out.println("Heuristic: (((p * N - P * n) * (p * N - P * n)) / (P + N)) * ((P + N) * (P + N) / (P * N * (p + n) * (P + N - p - n)))");
             Group[][] x2Result = BeamSearch.search(file, new X2Heuristic(), SEARCH_WIDTH, SEARCH_DEPTH, checkValue, blacklist);
             printFullResultArray(x2Result);
-            printEqualityCheck(x2Result);
+            printEqualityCheck(x2Result);*/
 
         } catch (Exception e) {
             e.printStackTrace();

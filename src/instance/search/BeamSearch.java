@@ -45,6 +45,7 @@ public class BeamSearch {
                 bestGroups.add(group);
             }
 
+
             //Add the level's results to the result array.
             result[level] = bestGroups.toArray();
         }

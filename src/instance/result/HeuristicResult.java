@@ -69,6 +69,15 @@ public class HeuristicResult {
     }
 
     /**
+     * Get the amount of unknown classifications.
+     *
+     * @return The amount of instances we could not evaluate.
+     */
+    public double getUnknown() {
+        return unknown;
+    }
+
+    /**
      * Get the evaluation value assigned to this result.
      *
      * @return A double value representing the evaluation result.
@@ -96,6 +105,7 @@ public class HeuristicResult {
         return "HeuristicResult{" +
                 "p=" + coveredPositive +
                 ", n=" + coveredNegative +
+                ", p+n=" + (this.coveredPositive + this.coveredNegative) +
                 ", P=" + positiveCount +
                 ", N=" + negativeCount +
                 ", P+N=" + (this.positiveCount + this.negativeCount) +
@@ -146,7 +156,6 @@ public class HeuristicResult {
             //If we cannot evaluate the value for one of the attributes, just skip it.
             if(containsValue == Group.ContainsHelper.UNKNOWN) {
                 unknown++;
-                continue;
             }
 
             //Global counting.

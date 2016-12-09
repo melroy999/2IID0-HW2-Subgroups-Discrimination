@@ -70,7 +70,6 @@ public class FixedSizeGroupCollection {
                 //Replace the worst element.
                 bestGroups.remove(replace);
                 bestGroups.add(candidate);
-                worstResult = bestGroups.last().getResult().getEvaluationValue();
                 break;
             default:
                 //Add it to the list.
@@ -83,6 +82,17 @@ public class FixedSizeGroupCollection {
                     bestGroups.add(candidate);
                 }
         }
+
+        worstResult = bestGroups.last().getResult().getEvaluationValue();
+    }
+
+    /**
+     * Get the worst value in this list.
+     *
+     * @return The worst performance value.
+     */
+    public double getWorstResult() {
+        return worstResult;
     }
 
     /**
