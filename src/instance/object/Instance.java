@@ -18,7 +18,7 @@ public class Instance {
      * @param target The id of the target attribute.
      */
     public Instance(String line, int target) {
-        //Parse the string manually instead of splitting it, as the data contains some annoying inputs that split cannot handle.
+        //Parse the string manually instead of splitting it, as the data containsInstance some annoying inputs that split cannot handle.
         List<String> components = parseString(line);
 
         //Convert to array and set.

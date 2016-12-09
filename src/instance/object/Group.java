@@ -3,6 +3,8 @@ package instance.object;
 import instance.attribute.AbstractAttribute;
 import instance.result.HeuristicResult;
 
+import java.lang.reflect.Member;
+
 /**
  * Object representing a (sub)group.
  */
@@ -110,8 +112,20 @@ public class Group implements Comparable<Group> {
      * @param instance The instance to evaluate.
      * @return True if the instance's attribute value is in the correct range of this group and the seed, false otherwise.
      */
-    public boolean contains(Instance instance) {
-        return metric.compare(instance.getValue(attribute), value) && (seed == null || seed.contains(instance));
+    public boolean containsInstance(Instance instance) {
+        //Skip if value is ?
+        return !instance.getValue(attribute).equals("?") && metric.compare(instance.getValue(attribute), value) && (seed == null || seed.containsInstance(instance));
+    }
+
+    /**
+     * Check if the attribute is already included in this group, with the same metric!
+     *
+     * @param attribute The attribute we want to find.
+     * @param metric The metric that is used.
+     * @return True if the attribute is present in this or one of the seeds.
+     */
+    public boolean containsGroup(AbstractAttribute attribute, EvaluationMetric metric) {
+        return this.attribute.getId() == attribute.getId() && this.metric == metric || (seed != null && seed.containsGroup(attribute, metric));
     }
 
     /**
@@ -132,8 +146,9 @@ public class Group implements Comparable<Group> {
      * @param checkValue Check if the values are equal or not, next to the attributes.
      * @return Whether the group is a duplicate or not.
      */
-    public boolean isDuplicateOf(Group group, boolean checkValue) {
-        return isDuplicateOf(group, checkValue, false);
+    public boolean isDuplicateOf(Group group, boolean checkValue, boolean debug) {
+        if(debug) System.out.println("Checking duplicate for " + this + " and " + group);
+        return isDuplicateOf(group, checkValue, false, debug);
     }
 
     /**
@@ -144,34 +159,31 @@ public class Group implements Comparable<Group> {
      * @param skipSizeCheck Check whether we want to skip the size check.
      * @return Whether the group is a duplicate or not.
      */
-    private boolean isDuplicateOf(Group group, boolean checkValue, boolean skipSizeCheck) {
+    private boolean isDuplicateOf(Group group, boolean checkValue, boolean skipSizeCheck, boolean debug) {
         //If we do not have the same amount of seeds, we cannot be duplicates.
         //We have to skip this in further recursive steps, as we will reduce the size of this group.
-        if(skipSizeCheck || this.seeds != group.seeds) {
+        if(!skipSizeCheck && this.seeds != group.seeds) {
             return false;
         }
 
         //Check whether we have an attribute/value pair if applicable that is not present within the other group.
         //This should be especially fast recursively, as new values are often introduced in the original group, and should be detected first.
         boolean foundMatch = false;
-        Group seed = group;
-        while(seed != null && !foundMatch) {
-            if(this.attribute.getId() == seed.attribute.getId() && (!checkValue || this.value.equals(group.value))) {
+        Group groupSeed = group;
+        while(groupSeed != null && !foundMatch) {
+            if(this.attribute.getId() == groupSeed.attribute.getId() && this.metric == groupSeed.metric && (!checkValue || this.value.equals(groupSeed.value))) {
+                if(debug) System.out.println("\t\t Match between " + this.toSimpleString() + " and " + groupSeed);
                 foundMatch = true;
             }
-            seed = seed.getSeed();
+            groupSeed = groupSeed.getSeed();
         }
 
-        //If we are doing our last comparison.
-        if(this.getSeed() == null) {
-            return foundMatch;
-        } else if(foundMatch) {
-            //If a match has been found for this subgroup, check the next level.
-            return isDuplicateOf(group, checkValue, true);
-        } else {
-            //We have found something that did not match, so it cannot be a duplicate.
-            return false;
-        }
+        if(debug && !foundMatch) System.out.println("\t\t No match between " + this.toSimpleString() + " and " + group);
+        if(debug && this.getSeed() == null && foundMatch) System.out.println("\t\t Group " + group + " is duplicated");
+
+        //If we found no match, this cannot be a duplicate.
+        //If a match has been found for this subgroup, check the next level.
+        return foundMatch && (this.getSeed() == null || this.getSeed().isDuplicateOf(group, checkValue, true, debug));
     }
 
     /**
@@ -190,9 +202,10 @@ public class Group implements Comparable<Group> {
     @Override
     public String toString() {
         String result = this.toSimpleString();
-        Group seed = this.seed;
+        Group seed = this.getSeed();
         while(seed != null) {
-            result += " \u2227 " + seed;
+            result += " \u2227 " + seed.toSimpleString();
+            seed = seed.getSeed();
         }
         return result;
     }

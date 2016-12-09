@@ -1,13 +1,19 @@
+import instance.heuristic.SensitivityQualityMeasureHeuristic;
+import instance.heuristic.SpecificityQualityMeasureHeuristic;
+import instance.heuristic.WeightedRelativeAccuracyHeuristic;
+import instance.heuristic.X2Heuristic;
 import instance.object.ArffFile;
+import instance.object.Group;
+import instance.search.BeamSearch;
 import reader.ArffReader;
 
 import java.util.HashSet;
 
 public class Main {
     private static final int DECIMAL_PLACES = 15;
-    private static int SEARCH_DEPTH = 3;
+    private static int SEARCH_DEPTH = 4;
     private static int SEARCH_WIDTH = 5;
-    private static final boolean allowSubgroupWithDifferentValues = false;
+    private static final boolean checkValue = false;
 
     public static void main(String[] args) {
         if(args.length < 2) {
@@ -25,65 +31,65 @@ public class Main {
             blacklist.add("decision_o");
             blacklist.add("decision");
 
-            /*System.out.println("= Weighted relative accuracy ===============================================================================");
+            System.out.println("= Weighted relative accuracy ===============================================================================");
             System.out.println("Heuristic: ((p + n) / (P + N)) * (p / (p + n) - P / (P + N))");
-            SubGroup[][] wraResult = BeamSearch.search(file, new WeightedRelativeAccuracyHeuristic(), SEARCH_DEPTH, SEARCH_WIDTH, blacklist, allowSubgroupWithDifferentValues);
+            Group[][] wraResult = BeamSearch.search(file, new WeightedRelativeAccuracyHeuristic(), SEARCH_WIDTH, SEARCH_DEPTH, checkValue, blacklist);
             printFullResultArray(wraResult);
             printEqualityCheck(wraResult);
 
             System.out.println("= Sensitivity quality measure ==============================================================================");
             System.out.println("Heuristic: p / P");
-            SubGroup[][] sensitivityResult = BeamSearch.search(file, new SensitivityQualityMeasureHeuristic(), SEARCH_DEPTH, SEARCH_WIDTH, blacklist, allowSubgroupWithDifferentValues);
+            Group[][] sensitivityResult = BeamSearch.search(file, new SensitivityQualityMeasureHeuristic(), SEARCH_WIDTH, SEARCH_DEPTH, checkValue, blacklist);
             printFullResultArray(sensitivityResult);
             printEqualityCheck(sensitivityResult);
 
             System.out.println("= Specificity quality measure ==============================================================================");
             System.out.println("Heuristic: 1 - n / N");
-            SubGroup[][] specificityResult = BeamSearch.search(file, new SpecificityQualityMeasureHeuristic(), SEARCH_DEPTH, SEARCH_WIDTH, blacklist, allowSubgroupWithDifferentValues);
+            Group[][] specificityResult = BeamSearch.search(file, new SpecificityQualityMeasureHeuristic(), SEARCH_WIDTH, SEARCH_DEPTH, checkValue, blacklist);
             printFullResultArray(specificityResult);
             printEqualityCheck(specificityResult);
 
             System.out.println("= x2 =======================================================================================================");
             System.out.println("Heuristic: (((p * N - P * n) * (p * N - P * n)) / (P + N)) * ((P + N) * (P + N) / (P * N * (p + n) * (P + N - p - n)))");
-            SubGroup[][] x2Result = BeamSearch.search(file, new X2Heuristic(), SEARCH_DEPTH, SEARCH_WIDTH, blacklist, allowSubgroupWithDifferentValues);
+            Group[][] x2Result = BeamSearch.search(file, new X2Heuristic(), SEARCH_WIDTH, SEARCH_DEPTH, checkValue, blacklist);
             printFullResultArray(x2Result);
-            printEqualityCheck(x2Result);*/
+            printEqualityCheck(x2Result);
 
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    /*private static void printFullResultArray(SubGroup[][] wraResult) {
+    private static void printFullResultArray(Group[][] wraResult) {
         for(int i = 0; i < wraResult.length; i++) {
             System.out.println();
-            SubGroup[] subGroups = wraResult[i];
+            Group[] subGroups = wraResult[i];
             System.out.println("Level-" + (i + 1) + ":");
-            for(SubGroup subGroup : subGroups) {
-                System.out.println("\t (eval: " + String.format("%." + DECIMAL_PLACES + "f", subGroup.getEvaluation()) + ") \t" + subGroup.shortNotation());
-                System.out.println("\t\t" + subGroup.getHeuristic());
+            for(Group subGroup : subGroups) {
+                System.out.println("\t (eval: " + String.format("%." + DECIMAL_PLACES + "f", subGroup.getResult().getEvaluationValue()) + ") \t" + subGroup);
+                System.out.println("\t\t" + subGroup.getResult());
             }
         }
         System.out.println();
-    }*/
+    }
 
-    /*private static void printEqualityCheck(SubGroup[][] wraResult) {
+    private static void printEqualityCheck(Group[][] groupCollection) {
         System.out.println("Equality check: ");
         boolean isFirstFirst = true;
-        for(int i = 0; i < wraResult.length; i++) {
+        for(int i = 0; i < groupCollection.length; i++) {
             boolean isFirst = true;
-            SubGroup[] subGroups = wraResult[i];
-            for(SubGroup subGroup : subGroups) {
-                for(SubGroup subGroup2 : subGroups) {
-                    if(subGroup != subGroup2 && subGroup.recursiveHasAllSubgroups(subGroup2, allowSubgroupWithDifferentValues)) {
+            Group[] groups = groupCollection[i];
+            for(Group subGroup : groups) {
+                for(Group subGroup2 : groups) {
+                    if(subGroup != subGroup2 && subGroup.isDuplicateOf(subGroup2, checkValue, false)) {
                         if(isFirst) {
                             System.out.println("Level-" + (i + 1) + ":");
                             isFirst = false;
                             isFirstFirst = false;
                         }
                         System.out.println("Equality for ");
-                        System.out.println("\t " + String.format("%." + DECIMAL_PLACES + "f", subGroup.getEvaluation()) + ") \t" + subGroup.shortNotation());
-                        System.out.println("\t " + String.format("%." + DECIMAL_PLACES + "f", subGroup2.getEvaluation()) + ") \t" + subGroup2.shortNotation());
+                        System.out.println("\t (" + String.format("%." + DECIMAL_PLACES + "f", subGroup.getResult().getEvaluationValue()) + ") \t" + subGroup);
+                        System.out.println("\t (" + String.format("%." + DECIMAL_PLACES + "f", subGroup2.getResult().getEvaluationValue()) + ") \t" + subGroup2);
                         System.out.println();
                     }
                 }
@@ -93,5 +99,5 @@ public class Main {
             System.out.println("No equalities detected.");
             System.out.println();
         }
-    }*/
+    }
 }

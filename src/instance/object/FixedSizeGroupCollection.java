@@ -11,6 +11,7 @@ public class FixedSizeGroupCollection {
     private final TreeSet<Group> bestGroups = new TreeSet<>();
     private final boolean checkValue;
     private final int size;
+    private double worstResult;
 
     /**
      * Create a data structure that used a fixed size sorted model.
@@ -22,7 +23,20 @@ public class FixedSizeGroupCollection {
         this.size = size;
     }
 
+    /**
+     * Add the group to the best groups if applicable.
+     *
+     * @param candidate The candidate group to add.
+     */
     public void add(Group candidate) {
+        //Check if the value is worth adding, whenever the list is full.
+        if(bestGroups.size() == size) {
+            if(worstResult > candidate.getResult().getEvaluationValue()) {
+                //Not worth my time.
+                return;
+            }
+        }
+
         //The action we want to take.
         Action action = Action.ADD;
         Group replace = null;
@@ -33,7 +47,7 @@ public class FixedSizeGroupCollection {
             boolean isImprovement = candidate.improvesGroup(candidate);
 
             //Check if we have a permutation of one of the best groups.
-            if(candidate.isDuplicateOf(group, checkValue)) {
+            if(candidate.isDuplicateOf(group, checkValue, false)) {
                 action = Action.ABORT;
 
                 //If we have a duplicate, we do not want this candidate in the list.
@@ -56,6 +70,7 @@ public class FixedSizeGroupCollection {
                 //Replace the worst element.
                 bestGroups.remove(replace);
                 bestGroups.add(candidate);
+                worstResult = bestGroups.last().getResult().getEvaluationValue();
                 break;
             default:
                 //Add it to the list.
@@ -70,7 +85,19 @@ public class FixedSizeGroupCollection {
         }
     }
 
+    /**
+     * Helper enum class.
+     */
     private enum Action {
-        ADD, ABORT, REPLACE;
+        ADD, ABORT, REPLACE
+    }
+
+    /**
+     * Convert the tree set to an array.
+     *
+     * @return The treeset as an array.
+     */
+    public Group[] toArray() {
+        return bestGroups.toArray(new Group[bestGroups.size()]);
     }
 }

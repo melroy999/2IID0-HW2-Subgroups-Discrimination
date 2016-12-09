@@ -1,5 +1,7 @@
 package instance.object;
 
+import java.util.HashMap;
+
 /**
  * Evaluation metric used to have dynamic comparisons between instances, based on our needs.
  */
@@ -12,7 +14,15 @@ public enum EvaluationMetric {
 
         @Override
         public boolean compare(String left, String right) {
-            return left.equals(right);
+            double leftValue, rightValue;
+            if(valueMap.containsKey(left) && valueMap.containsKey(right)) {
+                leftValue = valueMap.get(left);
+                rightValue = valueMap.get(right);
+
+                return leftValue == rightValue;
+            } else {
+                return left.equals(right);
+            }
         }
     }, GTEQ {
         @Override
@@ -22,7 +32,18 @@ public enum EvaluationMetric {
 
         @Override
         public boolean compare(String left, String right) {
-            return Double.valueOf(left) >= Double.valueOf(right);
+            double leftValue, rightValue;
+            if(!valueMap.containsKey(left)) {
+                valueMap.put(left, Double.parseDouble(left));
+            }
+            if(!valueMap.containsKey(right)) {
+                valueMap.put(right, Double.parseDouble(right));
+            }
+
+            leftValue = valueMap.get(left);
+            rightValue = valueMap.get(right);
+
+            return leftValue >= rightValue;
         }
     }, LTEQ {
         @Override
@@ -32,9 +53,22 @@ public enum EvaluationMetric {
 
         @Override
         public boolean compare(String left, String right) {
-            return Double.valueOf(left) <= Double.valueOf(right);
+            double leftValue, rightValue;
+            if(!valueMap.containsKey(left)) {
+                valueMap.put(left, Double.parseDouble(left));
+            }
+            if(!valueMap.containsKey(right)) {
+                valueMap.put(right, Double.parseDouble(right));
+            }
+
+            leftValue = valueMap.get(left);
+            rightValue = valueMap.get(right);
+
+            return leftValue <= rightValue;
         }
     };
+
+    private static HashMap<String, Double> valueMap = new HashMap<>();
 
     /**
      * Get the string representation.
@@ -58,7 +92,7 @@ public enum EvaluationMetric {
      * @param type the type we look at.
      * @return EQ, GTEQ, LTEQ if type is NUMERIC, EQ only otherwise.
      */
-    public EvaluationMetric[] getValues(Type type) {
+    public static EvaluationMetric[] getValues(Type type) {
         if(type == Type.NUMERIC) {
             return new EvaluationMetric[]{EQ, GTEQ, LTEQ};
         } else {

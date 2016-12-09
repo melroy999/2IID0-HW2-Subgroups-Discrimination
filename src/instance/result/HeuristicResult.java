@@ -19,15 +19,15 @@ public class HeuristicResult {
      * Create a heuristic result containing the confusion matrix.
      *
      * @param coveredPositive The p value in the confusion table.
-     * @param notCoveredPositive The P - p value in the confusion table.
+     * @param positive The P value in the confusion table.
      * @param coveredNegative The n value in the confusion table.
-     * @param notCoveredNegative The N - n value in the confusion table.
+     * @param negative The N value in the confusion table.
      */
-    private HeuristicResult(double coveredPositive, double notCoveredPositive, double coveredNegative, double notCoveredNegative) {
+    private HeuristicResult(double coveredPositive, double positive, double coveredNegative, double negative) {
         this.coveredPositive = coveredPositive;
         this.coveredNegative = coveredNegative;
-        this.positiveCount = coveredPositive + notCoveredPositive;
-        this.negativeCount = coveredNegative + notCoveredNegative;
+        this.positiveCount = positive;
+        this.negativeCount = negative;
     }
 
     /**
@@ -94,13 +94,9 @@ public class HeuristicResult {
         return "HeuristicResult{" +
                 "p=" + coveredPositive +
                 ", n=" + coveredNegative +
-                ", P-p=" + (positiveCount - coveredPositive) +
-                ", N-n=" + (negativeCount - coveredNegative) +
-                ", p+n=" + (coveredPositive + coveredNegative) +
-                ", N+P-p-n=" + (this.positiveCount + this.negativeCount - coveredPositive - coveredNegative) +
                 ", P=" + positiveCount +
                 ", N=" + negativeCount +
-                ", N+P=" + (this.positiveCount + this.negativeCount) +
+                ", P+N=" + (this.positiveCount + this.negativeCount) +
                 ", evaluation=" + evaluation +
                 '}';
     }
@@ -137,25 +133,26 @@ public class HeuristicResult {
     private static HeuristicResult getConfusionTable(Group group, Instance[] instances) {
         double coveredPositive = 0;
         double coveredNegative = 0;
-        double notCoveredPositive = 0;
-        double notCoveredNegative = 0;
+        double positive = 0;
+        double negative = 0;
 
         for(Instance instance : instances) {
-            if(group.contains(instance)) {
+            //Skip in case the value is unknown, as we will not be able to process that.
+            if(group.containsInstance(instance)) {
                 if(instance.getTargetValue().equals("1")) {
                     coveredPositive++;
                 } else {
                     coveredNegative++;
                 }
+            }
+
+            if(instance.getTargetValue().equals("1")) {
+                positive++;
             } else {
-                if(instance.getTargetValue().equals("1")) {
-                    notCoveredPositive++;
-                } else {
-                    notCoveredNegative++;
-                }
+                negative++;
             }
         }
 
-        return new HeuristicResult(coveredPositive, notCoveredPositive, coveredNegative, notCoveredNegative);
+        return new HeuristicResult(coveredPositive, positive, coveredNegative, negative);
     }
 }
