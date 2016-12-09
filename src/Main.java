@@ -1,9 +1,11 @@
+import instance.attribute.AbstractAttribute;
 import instance.heuristic.SensitivityQualityMeasureHeuristic;
 import instance.heuristic.SpecificityQualityMeasureHeuristic;
 import instance.heuristic.WeightedRelativeAccuracyHeuristic;
 import instance.heuristic.X2Heuristic;
 import instance.object.ArffFile;
 import instance.object.Group;
+import instance.object.Instance;
 import instance.search.BeamSearch;
 import reader.ArffReader;
 
@@ -13,6 +15,8 @@ public class Main {
     private static final int DECIMAL_PLACES = 6;
     private static int SEARCH_DEPTH = 1;
     private static int SEARCH_WIDTH = 10;
+
+    //Changing this will cause a mismatch between this program and cortana. Be warned.
     private static final boolean checkValue = true;
 
     public static void main(String[] args) {
@@ -37,7 +41,7 @@ public class Main {
             printFullResultArray(wraResult);
             printEqualityCheck(wraResult);
 
-            /*System.out.println("= Sensitivity quality measure ==============================================================================");
+            System.out.println("= Sensitivity quality measure ==============================================================================");
             System.out.println("Heuristic: p / P");
             Group[][] sensitivityResult = BeamSearch.search(file, new SensitivityQualityMeasureHeuristic(), SEARCH_WIDTH, SEARCH_DEPTH, checkValue, blacklist);
             printFullResultArray(sensitivityResult);
@@ -47,7 +51,7 @@ public class Main {
             System.out.println("Heuristic: 1 - n / N");
             Group[][] specificityResult = BeamSearch.search(file, new SpecificityQualityMeasureHeuristic(), SEARCH_WIDTH, SEARCH_DEPTH, checkValue, blacklist);
             printFullResultArray(specificityResult);
-            printEqualityCheck(specificityResult);*/
+            printEqualityCheck(specificityResult);
 
             System.out.println("= x2 =======================================================================================================");
             System.out.println("Heuristic: (((p * N - P * n) * (p * N - P * n)) / (P + N)) * ((P + N) * (P + N) / (P * N * (p + n) * (P + N - p - n)))");

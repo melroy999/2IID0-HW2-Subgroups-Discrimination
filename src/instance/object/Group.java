@@ -264,7 +264,8 @@ public class Group implements Comparable<Group> {
         double evalThis = this.getResult().getEvaluationValue();
         double evalO = group.getResult().getEvaluationValue();
         if(evalThis == evalO) {
-            return 0;
+            //NEVER SET THIS TO 0, it will eliminate valid results!
+            return this.toString().compareTo(group.toString());
         } else if(evalThis > evalO) {
             return -1;
         } else {
@@ -273,6 +274,6 @@ public class Group implements Comparable<Group> {
     }
 
     public enum ContainsHelper {
-        TRUE, FALSE, UNKNOWN;
+        TRUE, FALSE, UNKNOWN
     }
 }
