@@ -21,6 +21,6 @@ public class X2Heuristic extends AbstractHeuristic {
      */
     @Override
     public double evaluate(double p, double n, double P, double N) {
-        return (((p * N - P * n) * (p * N - P * n)) / (P + N)) * ((P + N) * (P + N) / (P * N * (p + n) * (P + N - p - n)));
+        return (((p * N - P * n) * (p * N - P * n)) / (P + N)) * (((P + N) * (P + N)) / (P * N * (p + n) * (P + N - p - n)));
     }
 }

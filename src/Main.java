@@ -47,13 +47,13 @@ public class Main {
             System.out.println("Heuristic: 1 - n / N");
             Group[][] specificityResult = BeamSearch.search(file, new SpecificityQualityMeasureHeuristic(), SEARCH_WIDTH, SEARCH_DEPTH, checkValue, blacklist);
             printFullResultArray(specificityResult);
-            printEqualityCheck(specificityResult);
+            printEqualityCheck(specificityResult);*/
 
             System.out.println("= x2 =======================================================================================================");
             System.out.println("Heuristic: (((p * N - P * n) * (p * N - P * n)) / (P + N)) * ((P + N) * (P + N) / (P * N * (p + n) * (P + N - p - n)))");
             Group[][] x2Result = BeamSearch.search(file, new X2Heuristic(), SEARCH_WIDTH, SEARCH_DEPTH, checkValue, blacklist);
             printFullResultArray(x2Result);
-            printEqualityCheck(x2Result);*/
+            printEqualityCheck(x2Result);
 
         } catch (Exception e) {
             e.printStackTrace();

@@ -1,6 +1,7 @@
 package instance.result;
 
 import instance.heuristic.AbstractHeuristic;
+import instance.object.EvaluationMetric;
 import instance.object.Group;
 import instance.object.Instance;
 
