@@ -1,6 +1,7 @@
 package instance.result;
 
 import instance.heuristic.AbstractHeuristic;
+import instance.heuristic.X2Heuristic;
 import instance.object.EvaluationMetric;
 import instance.object.Group;
 import instance.object.Instance;
@@ -125,7 +126,7 @@ public class HeuristicResult {
      */
     public static HeuristicResult evaluate(AbstractHeuristic heuristic, Group group, Instance[] instances) {
         //Get the confusion table.
-        HeuristicResult result = getConfusionTable(group, instances);
+        HeuristicResult result = getConfusionTable(group, instances, heuristic instanceof X2Heuristic);
 
         //Evaluate the confusion table.
         double evaluation = heuristic.evaluate(result.getCoveredPositive(), result.getCoveredNegative(), result.getPositiveCount(), result.getNegativeCount());
@@ -144,7 +145,7 @@ public class HeuristicResult {
      * @param instances The list of instances that the confusion table should be build from.
      * @return Heuristic result with the values of the confusion table set.
      */
-    private static HeuristicResult getConfusionTable(Group group, Instance[] instances) {
+    private static HeuristicResult getConfusionTable(Group group, Instance[] instances, boolean countUnknownsOnLTEQ) {
         double coveredPositive = 0;
         double coveredNegative = 0;
         double positive = 0;
@@ -156,6 +157,13 @@ public class HeuristicResult {
 
             //If we cannot evaluate the value for one of the attributes, just skip it.
             if(containsValue == Group.ContainsHelper.UNKNOWN) {
+                if(countUnknownsOnLTEQ && group.getMetric() == EvaluationMetric.LTEQ) {
+                    if(instance.getTargetValue().equals("1")) {
+                        coveredPositive++;
+                    } else {
+                        coveredNegative++;
+                    }
+                }
                 unknown++;
             }
 
