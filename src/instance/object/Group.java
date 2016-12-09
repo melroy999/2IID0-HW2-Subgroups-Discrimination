@@ -112,9 +112,19 @@ public class Group implements Comparable<Group> {
      * @param instance The instance to evaluate.
      * @return True if the instance's attribute value is in the correct range of this group and the seed, false otherwise.
      */
-    public boolean containsInstance(Instance instance) {
-        //Skip if value is ?
-        return !instance.getValue(attribute).equals("?") && metric.compare(instance.getValue(attribute), value) && (seed == null || seed.containsInstance(instance));
+    public ContainsHelper containsInstance(Instance instance) {
+        //If the value becomes ? once, we want to skip it in the total counting as well.
+        if(instance.getValue(attribute).equals("?")) {
+            return ContainsHelper.UNKNOWN;
+        } else if(metric.compare(instance.getValue(attribute), value)) {
+            return ContainsHelper.TRUE;
+        } else if(seed != null) {
+            //Check the seed.
+            return seed.containsInstance(instance);
+        }
+
+        //Return FALSE on default, obviously.
+        return ContainsHelper.FALSE;
     }
 
     /**
@@ -260,5 +270,9 @@ public class Group implements Comparable<Group> {
         } else {
             return 1;
         }
+    }
+
+    public enum ContainsHelper {
+        TRUE, FALSE, UNKNOWN;
     }
 }

@@ -28,7 +28,7 @@ public class FixedSizeGroupCollection {
      *
      * @param candidate The candidate group to add.
      */
-    public void add(Group candidate) {
+    public synchronized void add(Group candidate) {
         //Check if the value is worth adding, whenever the list is full.
         if(bestGroups.size() == size) {
             if(worstResult > candidate.getResult().getEvaluationValue()) {

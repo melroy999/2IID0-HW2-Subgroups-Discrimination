@@ -10,10 +10,10 @@ import reader.ArffReader;
 import java.util.HashSet;
 
 public class Main {
-    private static final int DECIMAL_PLACES = 15;
-    private static int SEARCH_DEPTH = 4;
-    private static int SEARCH_WIDTH = 5;
-    private static final boolean checkValue = false;
+    private static final int DECIMAL_PLACES = 6;
+    private static int SEARCH_DEPTH = 1;
+    private static int SEARCH_WIDTH = 10;
+    private static final boolean checkValue = true;
 
     public static void main(String[] args) {
         if(args.length < 2) {

@@ -94,7 +94,7 @@ public enum EvaluationMetric {
      */
     public static EvaluationMetric[] getValues(Type type) {
         if(type == Type.NUMERIC) {
-            return new EvaluationMetric[]{EQ, GTEQ, LTEQ};
+            return new EvaluationMetric[]{LTEQ, GTEQ};
         } else {
             return new EvaluationMetric[]{EQ};
         }

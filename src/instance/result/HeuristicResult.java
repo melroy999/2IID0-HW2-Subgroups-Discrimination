@@ -13,6 +13,7 @@ public class HeuristicResult {
     private final double coveredNegative;
     private final double positiveCount;
     private final double negativeCount;
+    private final double unknown;
     private double evaluation;
 
     /**
@@ -23,11 +24,12 @@ public class HeuristicResult {
      * @param coveredNegative The n value in the confusion table.
      * @param negative The N value in the confusion table.
      */
-    private HeuristicResult(double coveredPositive, double positive, double coveredNegative, double negative) {
+    private HeuristicResult(double coveredPositive, double positive, double coveredNegative, double negative, double unknown) {
         this.coveredPositive = coveredPositive;
         this.coveredNegative = coveredNegative;
         this.positiveCount = positive;
         this.negativeCount = negative;
+        this.unknown = unknown;
     }
 
     /**
@@ -97,6 +99,7 @@ public class HeuristicResult {
                 ", P=" + positiveCount +
                 ", N=" + negativeCount +
                 ", P+N=" + (this.positiveCount + this.negativeCount) +
+                ", N.A.=" + unknown +
                 ", evaluation=" + evaluation +
                 '}';
     }
@@ -135,24 +138,34 @@ public class HeuristicResult {
         double coveredNegative = 0;
         double positive = 0;
         double negative = 0;
+        double unknown = 0;
 
         for(Instance instance : instances) {
+            Group.ContainsHelper containsValue = group.containsInstance(instance);
+
+            //If we cannot evaluate the value for one of the attributes, just skip it.
+            if(containsValue == Group.ContainsHelper.UNKNOWN) {
+                unknown++;
+                continue;
+            }
+
+            //Global counting.
+            if(instance.getTargetValue().equals("1")) {
+                positive++;
+            } else {
+                negative++;
+            }
+
             //Skip in case the value is unknown, as we will not be able to process that.
-            if(group.containsInstance(instance)) {
+            if(containsValue == Group.ContainsHelper.TRUE) {
                 if(instance.getTargetValue().equals("1")) {
                     coveredPositive++;
                 } else {
                     coveredNegative++;
                 }
             }
-
-            if(instance.getTargetValue().equals("1")) {
-                positive++;
-            } else {
-                negative++;
-            }
         }
 
-        return new HeuristicResult(coveredPositive, positive, coveredNegative, negative);
+        return new HeuristicResult(coveredPositive, positive, coveredNegative, negative, unknown);
     }
 }
