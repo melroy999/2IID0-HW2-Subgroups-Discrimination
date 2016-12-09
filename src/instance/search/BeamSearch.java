@@ -80,7 +80,6 @@ public class BeamSearch {
 
             //We have different options for the metric.
             for(EvaluationMetric metric : EvaluationMetric.getValues(attribute.getType())) {
-
                 //As we have a list of seeds, we have to iterate over all of them as well during the result gathering.
                 Group[] seededGroups;
                 if (seeds.length == 0) {

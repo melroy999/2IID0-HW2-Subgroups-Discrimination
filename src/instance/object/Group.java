@@ -265,7 +265,7 @@ public class Group implements Comparable<Group> {
         double evalO = group.getResult().getEvaluationValue();
         if(evalThis == evalO) {
             //NEVER SET THIS TO 0, it will eliminate valid results!
-            return this.toString().compareTo(group.toString());
+            return group.toString().compareTo(this.toString());
         } else if(evalThis > evalO) {
             return -1;
         } else {

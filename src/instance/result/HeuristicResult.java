@@ -1,6 +1,8 @@
 package instance.result;
 
 import instance.heuristic.AbstractHeuristic;
+import instance.heuristic.SensitivityQualityMeasureHeuristic;
+import instance.heuristic.SpecificityQualityMeasureHeuristic;
 import instance.heuristic.X2Heuristic;
 import instance.object.EvaluationMetric;
 import instance.object.Group;
@@ -126,7 +128,8 @@ public class HeuristicResult {
      */
     public static HeuristicResult evaluate(AbstractHeuristic heuristic, Group group, Instance[] instances) {
         //Get the confusion table.
-        HeuristicResult result = getConfusionTable(group, instances, heuristic instanceof X2Heuristic);
+        //Note here that the X2 and Sensitivity measures require that LTEQ also includes unknown cases, for some unknown reason... Ask Cortana.
+        HeuristicResult result = getConfusionTable(group, instances, heuristic instanceof X2Heuristic || heuristic instanceof SensitivityQualityMeasureHeuristic);
 
         //Evaluate the confusion table.
         double evaluation = heuristic.evaluate(result.getCoveredPositive(), result.getCoveredNegative(), result.getPositiveCount(), result.getNegativeCount());
@@ -143,6 +146,7 @@ public class HeuristicResult {
      *
      * @param group The group to use as cutoff.
      * @param instances The list of instances that the confusion table should be build from.
+     * @param countUnknownsOnLTEQ Whether we want to count unknown cases as part of the result when LTEQ is used.
      * @return Heuristic result with the values of the confusion table set.
      */
     private static HeuristicResult getConfusionTable(Group group, Instance[] instances, boolean countUnknownsOnLTEQ) {
