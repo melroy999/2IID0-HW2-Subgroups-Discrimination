@@ -50,7 +50,7 @@ public class FixedSizeGroupCollection {
                 break;
             }
 
-            if(candidate.getResult().getEvaluationValue() == group.getResult().getEvaluationValue() && candidate.isMoreSpecificThan(group)) {
+            if(!checkValue && candidate.getResult().getEvaluationValue() == group.getResult().getEvaluationValue() && candidate.isMoreSpecificThan(group)) {
                 replace = group;
                 action = Action.REPLACE;
                 break;

@@ -18,7 +18,7 @@ public class Main {
     private static int MINIMUM_GROUP_SIZE = 1;
 
     //Changing this will cause a mismatch between this program and cortana. Be warned.
-    private static final boolean checkValue = true;
+    private static final boolean checkValue = false;
 
     public static void main(String[] args) {
         if(args.length < 3) {
