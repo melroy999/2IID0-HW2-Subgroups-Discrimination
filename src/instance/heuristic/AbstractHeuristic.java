@@ -15,4 +15,10 @@ public abstract class AbstractHeuristic {
      * @return The result calculated by the heuristic.
      */
     public abstract double evaluate(double p, double n, double P, double N);
+
+    /**
+     * Whether this heuristic counts unknowns as valid results in LEQ metric mode.
+     * @return Whether this heuristic counts unknowns as valid results in LEQ metric mode.
+     */
+    public abstract boolean countsUnknownsInLEQ();
 }

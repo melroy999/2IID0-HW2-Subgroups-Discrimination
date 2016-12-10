@@ -23,4 +23,14 @@ public class X2Heuristic extends AbstractHeuristic {
     public double evaluate(double p, double n, double P, double N) {
         return (((p * N - P * n) * (p * N - P * n)) / (P + N)) * (((P + N) * (P + N)) / (P * N * (p + n) * (P + N - p - n)));
     }
+
+    /**
+     * Whether this heuristic counts unknowns as valid results in LEQ metric mode.
+     *
+     * @return Whether this heuristic counts unknowns as valid results in LEQ metric mode.
+     */
+    @Override
+    public boolean countsUnknownsInLEQ() {
+        return true;
+    }
 }

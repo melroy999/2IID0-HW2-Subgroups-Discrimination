@@ -221,7 +221,7 @@ public class Group implements Comparable<Group> {
         String result = this.toSimpleString();
         Group seed = this.getSeed();
         while(seed != null) {
-            result += " \u2227 " + seed.toSimpleString();
+            result = seed.toSimpleString() + " \u2227 " + result;
             seed = seed.getSeed();
         }
         return result;

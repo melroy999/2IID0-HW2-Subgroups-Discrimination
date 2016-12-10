@@ -21,6 +21,16 @@ public class WeightedRelativeAccuracyHeuristic extends AbstractHeuristic {
         return ((p + n) / (P + N)) * (p / (p + n) - P / (P + N));
     }
 
+    /**
+     * Whether this heuristic counts unknowns as valid results in LEQ metric mode.
+     *
+     * @return Whether this heuristic counts unknowns as valid results in LEQ metric mode.
+     */
+    @Override
+    public boolean countsUnknownsInLEQ() {
+        return false;
+    }
+
     /*@Override
     public HeuristicResult evaluate(SubGroup subGroup, Instance[] instance) {
         HeuristicResult result = getConfusionTable(subGroup, instance);

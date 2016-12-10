@@ -129,7 +129,7 @@ public class HeuristicResult {
     public static HeuristicResult evaluate(AbstractHeuristic heuristic, Group group, Instance[] instances) {
         //Get the confusion table.
         //Note here that the X2 and Sensitivity measures require that LTEQ also includes unknown cases, for some unknown reason... Ask Cortana.
-        HeuristicResult result = getConfusionTable(group, instances, heuristic instanceof X2Heuristic || heuristic instanceof SensitivityQualityMeasureHeuristic);
+        HeuristicResult result = getConfusionTable(group, instances, heuristic.countsUnknownsInLEQ());
 
         //Evaluate the confusion table.
         double evaluation = heuristic.evaluate(result.getCoveredPositive(), result.getCoveredNegative(), result.getPositiveCount(), result.getNegativeCount());
