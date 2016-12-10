@@ -43,21 +43,16 @@ public class FixedSizeGroupCollection {
 
         //Check whether we have something similar.
         for(Group group : bestGroups) {
-            //Check if this candidate can potentially improve the selected group.
-            boolean isImprovement = candidate.improvesGroup(candidate);
-
-            //Check if we have a permutation of one of the best groups.
-            if(candidate.isDuplicateOf(group, checkValue, false)) {
+            //We don't want the subgroup to be an exact duplicate to one of the groups in here.
+            if(candidate.isDuplicateOf(group, true, false)) {
+                //Abort.
                 action = Action.ABORT;
+                break;
+            }
 
-                //If we have a duplicate, we do not want this candidate in the list.
-                //However, if checkValue is false, it could be that this is an improvement. So replace in that case.
-                if(!checkValue && isImprovement) {
-                    action = Action.REPLACE;
-                    replace = group;
-                }
-
-                //Break the loop regardless of the case.
+            if(candidate.getResult().getEvaluationValue() == group.getResult().getEvaluationValue() && candidate.isMoreSpecificThan(group)) {
+                replace = group;
+                action = Action.REPLACE;
                 break;
             }
         }

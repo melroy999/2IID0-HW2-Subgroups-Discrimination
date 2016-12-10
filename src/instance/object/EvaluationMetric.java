@@ -24,6 +24,18 @@ public enum EvaluationMetric {
                 return left.equals(right);
             }
         }
+
+        /**
+         * Compare the left hand side with the right hand side, which depends on the metric used. Uses a strict comparison.
+         *
+         * @param left  The left hand value.
+         * @param right The right hand value.
+         * @return Whether we evaluate true or false.
+         */
+        @Override
+        public boolean compareStrict(String left, String right) {
+            return compare(left, right);
+        }
     }, GTEQ {
         @Override
         public String toString() {
@@ -44,6 +56,22 @@ public enum EvaluationMetric {
             rightValue = valueMap.get(right);
 
             return leftValue >= rightValue;
+        }
+
+        @Override
+        public boolean compareStrict(String left, String right) {
+            double leftValue, rightValue;
+            if(!valueMap.containsKey(left)) {
+                valueMap.put(left, Double.parseDouble(left));
+            }
+            if(!valueMap.containsKey(right)) {
+                valueMap.put(right, Double.parseDouble(right));
+            }
+
+            leftValue = valueMap.get(left);
+            rightValue = valueMap.get(right);
+
+            return leftValue > rightValue;
         }
     }, LTEQ {
         @Override
@@ -66,6 +94,22 @@ public enum EvaluationMetric {
 
             return leftValue <= rightValue;
         }
+
+        @Override
+        public boolean compareStrict(String left, String right) {
+            double leftValue, rightValue;
+            if(!valueMap.containsKey(left)) {
+                valueMap.put(left, Double.parseDouble(left));
+            }
+            if(!valueMap.containsKey(right)) {
+                valueMap.put(right, Double.parseDouble(right));
+            }
+
+            leftValue = valueMap.get(left);
+            rightValue = valueMap.get(right);
+
+            return leftValue < rightValue;
+        }
     };
 
     private static HashMap<String, Double> valueMap = new HashMap<>();
@@ -85,6 +129,15 @@ public enum EvaluationMetric {
      * @return Whether we evaluate true or false.
      */
     public abstract boolean compare(String left, String right);
+
+    /**
+     * Compare the left hand side with the right hand side, which depends on the metric used. Uses a strict comparison.
+     *
+     * @param left The left hand value.
+     * @param right The right hand value.
+     * @return Whether we evaluate true or false.
+     */
+    public abstract boolean compareStrict(String left, String right);
 
     /**
      * Get the evaluation metrics we should look at for a specific type of attribute.

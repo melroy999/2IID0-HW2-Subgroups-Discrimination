@@ -148,12 +148,51 @@ public class Group implements Comparable<Group> {
     /**
      * Whether the given group improves this group.
      *
-     * @param group The group that is a candidate improvement.
+     * @param group The group that we want to improve.
      * @return Whether {@code group} is an improvement or not.
      */
     public boolean improvesGroup(Group group) {
         //Check whether the group gives a better evaluation or not.
-        return this.getResult().getEvaluationValue() < group.getResult().getEvaluationValue();
+        return this.getResult().getEvaluationValue() >= group.getResult().getEvaluationValue();
+    }
+
+    /**
+     * Check whether the group cutoff is as close to the tripping point as it can be.
+     *
+     * @param group The group that we want to improve.
+     * @return Whether this group has stricter bounds than the other group, but contains exactly the same.
+     */
+    public boolean isMoreSpecificThan(Group group) {
+        boolean equalStructure = this.isDuplicateOf(group, false, false);
+
+        //If the structures are not equal, or are exactly equal with the same values, this will never be more specific.
+        if(!equalStructure) {
+            return false;
+        }
+
+        //If for all attributes with the same metric.
+        boolean thisStricter = false;
+        boolean groupStricter = false;
+
+        Group seed = this;
+        while(seed != null) {
+            Group comparator = group;
+            while(seed.attribute != comparator.attribute) {
+                comparator = comparator.seed;
+            }
+            //Compare the values with the correct metric.
+            if(!seed.value.equals(comparator.value)) {
+                if(seed.getMetric().compareStrict(seed.value, comparator.value)) {
+                    thisStricter = true;
+                } else {
+                    groupStricter = true;
+                }
+            }
+            seed = seed.getSeed();
+        }
+
+        //This can only be stricter if the group we compare to is never stricter.
+        return thisStricter && !groupStricter;
     }
 
     /**
