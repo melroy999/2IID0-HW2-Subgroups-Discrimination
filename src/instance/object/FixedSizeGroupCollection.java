@@ -31,7 +31,7 @@ public class FixedSizeGroupCollection {
     public void add(Group candidate) {
         //Check if the value is worth adding, whenever the list is full.
         if(bestGroups.size() == size) {
-            if(worstResult > candidate.getResult().getEvaluationValue()) {
+            if(candidate.compareTo(bestGroups.last()) != -1) {
                 //Not worth my time.
                 return;
             }

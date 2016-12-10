@@ -188,6 +188,13 @@ public class HeuristicResult {
             }
         }
 
+        /*Group seed;
+        if((seed = group.getSeed()) != null) {
+            //We want P and N to be the covered space in the subgroup.
+            positive = seed.getResult().getCoveredPositive();
+            negative = seed.getResult().getCoveredNegative();
+        }*/
+
         return new HeuristicResult(coveredPositive, positive, coveredNegative, negative, unknown);
     }
 }
