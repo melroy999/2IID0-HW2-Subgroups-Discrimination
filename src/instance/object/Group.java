@@ -113,18 +113,25 @@ public class Group implements Comparable<Group> {
      * @return True if the instance's attribute value is in the correct range of this group and the seed, false otherwise.
      */
     public ContainsHelper containsInstance(Instance instance) {
-        //If the value becomes ? once, we want to skip it in the total counting as well.
+        //If the value is unknown, we want to handle it is an unknown state.
         if(instance.getValue(attribute).equals("?")) {
             return ContainsHelper.UNKNOWN;
-        } else if(metric.compare(instance.getValue(attribute), value)) {
-            return ContainsHelper.TRUE;
-        } else if(seed != null) {
-            //Check the seed.
-            return seed.containsInstance(instance);
         }
 
-        //Return FALSE on default, obviously.
-        return ContainsHelper.FALSE;
+        //Get the contains instance state of the seed, which is true on default, as the entire data set contains everything.
+        ContainsHelper seedContains = ContainsHelper.TRUE;
+        if(seed != null) {
+            seedContains = seed.containsInstance(instance);
+        }
+
+        //Determine how we want to use the seed value.
+        if(seedContains == ContainsHelper.TRUE) {
+            //Check whether this contains the seed.
+            return metric.compare(instance.getValue(attribute), value) ? ContainsHelper.TRUE : ContainsHelper.FALSE;
+        } else {
+            //Return the seed value.
+            return seedContains;
+        }
     }
 
     /**
