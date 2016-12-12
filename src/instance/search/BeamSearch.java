@@ -12,7 +12,7 @@ import java.util.*;
  * Class used for beam searches.
  */
 public class BeamSearch {
-    public static Group[][] search(ArffFile data, AbstractHeuristic heuristic, int searchWidth, int searchDepth, int minimumGroupSize, boolean checkValue, HashSet<String> blacklist) {
+    public static Group[][] search(ArffFile data, AbstractHeuristic heuristic, int searchWidth, int searchDepth, int minimumGroupSize, double maximumFraction, boolean checkValue, HashSet<String> blacklist) {
         //Create the array that will contain all intermediary results.
         Group[][] result = new Group[searchDepth][];
 
@@ -36,7 +36,7 @@ public class BeamSearch {
                 //Skip the target.
                 if(attribute.getId() != data.getTarget()) {
                     //Get the collection of best results for the group.
-                    attributeSearch(data, heuristic, attribute, minimumGroupSize, bestGroups.toArray(), attributeBestGroups);
+                    attributeSearch(data, heuristic, attribute, minimumGroupSize, maximumFraction, bestGroups.toArray(), attributeBestGroups);
                 }
             }
 
@@ -63,7 +63,7 @@ public class BeamSearch {
      * @param seeds The list of seeds the search should use.
      * @return A collection of best results.
      */
-    public static void attributeSearch(ArffFile data, AbstractHeuristic heuristic, AbstractAttribute attribute, int minimumGroupSize, Group[] seeds, FixedSizeGroupCollection bestGroups) {
+    public static void attributeSearch(ArffFile data, AbstractHeuristic heuristic, AbstractAttribute attribute, int minimumGroupSize, double maximumFraction, Group[] seeds, FixedSizeGroupCollection bestGroups) {
         //List of values we have seen already.
         HashSet<String> visitedCombinations = new HashSet<>();
 
@@ -111,7 +111,7 @@ public class BeamSearch {
                     //Check if the group has reduced the size of the seed, or the size of the total set, depending on the value of seed.
                     if(group.getSeed() == null) {
                         //Check if we have a different set than the original data set. Make sure that our group is not empty...
-                        if(result.getCoveredPositive() + result.getCoveredNegative() == result.getPositiveCount() + result.getNegativeCount() || result.getCoveredPositive() + result.getCoveredNegative() < minimumGroupSize) {
+                        if((result.getCoveredPositive() + result.getCoveredNegative()) >= maximumFraction * (result.getPositiveCount() + result.getNegativeCount()) || result.getCoveredPositive() + result.getCoveredNegative() < minimumGroupSize) {
                             continue;
                         }
                     } else {
